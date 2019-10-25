@@ -313,7 +313,7 @@ void insertDebugValuesForPHIs(BasicBlock *BB,
 TinyPtrVector<DbgVariableIntrinsic *> FindDbgAddrUses(Value *V);
 
 /// Finds the llvm.dbg.value intrinsics describing a value.
-void findDbgValues(SmallVectorImpl<DbgValueInst *> &DbgValues, Value *V);
+void findDbgValues(SmallVectorImpl<DbgValueInst *> &DbgValues, Value *V, bool isPhi = false);
 
 /// Finds the debug info intrinsics describing a value.
 void findDbgUsers(SmallVectorImpl<DbgVariableIntrinsic *> &DbgInsts, Value *V);
@@ -368,7 +368,8 @@ bool salvageDebugInfoForDbgValues(Instruction &I,
 /// it cannot be salvaged. \p StackVal: whether DW_OP_stack_value should be
 /// appended to the expression.
 DIExpression *salvageDebugInfoImpl(Instruction &I, DIExpression *DIExpr,
-                                   bool StackVal);
+                                   DILocalVariable *Var, bool StackVal,
+                                   bool *HasTwoRegOps = nullptr);
 
 /// Point debug users of \p From to \p To or salvage them. Use this function
 /// only when replacing all uses of \p From with \p To, with a guarantee that

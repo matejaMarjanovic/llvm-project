@@ -151,6 +151,26 @@ StringRef llvm::dwarf::OperationEncodingString(unsigned Encoding) {
     return "DW_OP_LLVM_tag_offset";
   case DW_OP_LLVM_entry_value:
     return "DW_OP_LLVM_entry_value";
+  case DW_OP_LLVM_reg_plus:
+    return "DW_OP_LLVM_reg_plus";
+  case dwarf::DW_OP_LLVM_reg_minus:
+    return "DW_OP_LLVM_reg_minus";
+  case dwarf::DW_OP_LLVM_reg_mul:
+    return "DW_OP_LLVM_reg_mul";
+  case dwarf::DW_OP_LLVM_reg_div:
+    return "DW_OP_LLVM_reg_div";
+  case dwarf::DW_OP_LLVM_reg_or:
+    return "DW_OP_LLVM_reg_or";
+  case dwarf::DW_OP_LLVM_reg_and:
+    return "DW_OP_LLVM_reg_and";
+  case dwarf::DW_OP_LLVM_reg_xor:
+    return "DW_OP_LLVM_reg_xor";
+  case dwarf::DW_OP_LLVM_reg_shl:
+    return "DW_OP_LLVM_reg_shl";
+  case dwarf::DW_OP_LLVM_reg_shr:
+    return "DW_OP_LLVM_reg_shr";
+  case dwarf::DW_OP_LLVM_reg_shra:
+    return "DW_OP_LLVM_reg_shra";
   }
 }
 
@@ -163,6 +183,16 @@ unsigned llvm::dwarf::getOperationEncoding(StringRef OperationEncodingString) {
       .Case("DW_OP_LLVM_fragment", DW_OP_LLVM_fragment)
       .Case("DW_OP_LLVM_tag_offset", DW_OP_LLVM_tag_offset)
       .Case("DW_OP_LLVM_entry_value", DW_OP_LLVM_entry_value)
+      .Case("DW_OP_LLVM_reg_plus", DW_OP_LLVM_reg_plus)
+      .Case("DW_OP_LLVM_reg_minus", DW_OP_LLVM_reg_minus)
+      .Case("DW_OP_LLVM_reg_mul", DW_OP_LLVM_reg_mul)
+      .Case("DW_OP_LLVM_reg_div", DW_OP_LLVM_reg_div)
+      .Case("DW_OP_LLVM_reg_or", DW_OP_LLVM_reg_or)
+      .Case("DW_OP_LLVM_reg_and", DW_OP_LLVM_reg_and)
+      .Case("DW_OP_LLVM_reg_xor", DW_OP_LLVM_reg_xor)
+      .Case("DW_OP_LLVM_reg_shl", DW_OP_LLVM_reg_shl)
+      .Case("DW_OP_LLVM_reg_shr", DW_OP_LLVM_reg_shr)
+      .Case("DW_OP_LLVM_reg_shra", DW_OP_LLVM_reg_shra)
       .Default(0);
 }
 

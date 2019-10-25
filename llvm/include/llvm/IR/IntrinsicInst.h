@@ -36,6 +36,8 @@
 #include <cassert>
 #include <cstdint>
 
+
+
 namespace llvm {
 
   /// A wrapper class for inspecting calls to intrinsic functions.
@@ -90,7 +92,7 @@ namespace llvm {
     /// Get the location corresponding to the variable referenced by the debug
     /// info intrinsic.  Depending on the intrinsic, this could be the
     /// variable's value or its address.
-    Value *getVariableLocation(bool AllowNullOp = true) const;
+    Value *getVariableLocation(bool AllowNullOp = true, unsigned i = 0) const;
 
     /// Does this describe the address of a local variable. True for dbg.addr
     /// and dbg.declare, but not dbg.value, which describes its value.
@@ -171,6 +173,18 @@ namespace llvm {
   public:
     Value *getValue() const {
       return getVariableLocation(/* AllowNullOp = */ false);
+    }
+
+    Value *getValue2() const {
+      return getVariableLocation(/* AllowNullOp = */ false,/* i = */ 3);
+    }
+
+    DIExpression *getExpressionValPiece() const {
+      return cast<DIExpression>(getRawExpressionValPiece());
+    }
+
+    Metadata *getRawExpressionValPiece() const {
+      return cast<MetadataAsValue>(getArgOperand(4))->getMetadata();
     }
 
     /// \name Casting methods

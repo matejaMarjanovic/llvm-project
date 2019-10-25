@@ -51,6 +51,7 @@
 #include <cstdint>
 #include <cstring>
 #include <string>
+#include <llvm/Support/raw_ostream.h>
 
 using namespace llvm;
 using ProfileCount = Function::ProfileCount;
@@ -1135,7 +1136,7 @@ static bool matchIntrinsicType(
   switch (D.Kind) {
     case IITDescriptor::Void: return !Ty->isVoidTy();
     case IITDescriptor::VarArg: return true;
-    case IITDescriptor::MMX:  return !Ty->isX86_MMXTy();
+    case IITDescriptor::MMX: return !Ty->isX86_MMXTy();
     case IITDescriptor::Token: return !Ty->isTokenTy();
     case IITDescriptor::Metadata: return !Ty->isMetadataTy();
     case IITDescriptor::Half: return !Ty->isHalfTy();

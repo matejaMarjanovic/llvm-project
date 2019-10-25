@@ -121,6 +121,16 @@ enum LocationAtom {
   DW_OP_LLVM_convert = 0x1001,     ///< Only used in LLVM metadata.
   DW_OP_LLVM_tag_offset = 0x1002,  ///< Only used in LLVM metadata.
   DW_OP_LLVM_entry_value = 0x1003, ///< Only used in LLVM metadata.
+  DW_OP_LLVM_reg_plus = 0x1004,
+  DW_OP_LLVM_reg_minus = 0x1005,
+  DW_OP_LLVM_reg_mul = 0x1006,
+  DW_OP_LLVM_reg_div = 0x1007,
+  DW_OP_LLVM_reg_or = 0x1008,
+  DW_OP_LLVM_reg_and = 0x1009,
+  DW_OP_LLVM_reg_xor = 0x100a,
+  DW_OP_LLVM_reg_shl = 0x100b,
+  DW_OP_LLVM_reg_shr = 0x100c,
+  DW_OP_LLVM_reg_shra = 0x100d,
 };
 
 enum TypeKind : uint8_t {

@@ -1235,7 +1235,7 @@ static bool PhiHasDebugValue(DILocalVariable *DIVar,
   // is removed by LowerDbgDeclare(), we need to make sure that we are
   // not inserting the same dbg.value intrinsic over and over.
   SmallVector<DbgValueInst *, 1> DbgValues;
-  findDbgValues(DbgValues, APN);
+  findDbgValues(DbgValues, APN, true);
   for (auto *DVI : DbgValues) {
     assert(DVI->getValue() == APN);
     if ((DVI->getVariable() == DIVar) && (DVI->getExpression() == DIExpr))
@@ -1511,16 +1511,22 @@ TinyPtrVector<DbgVariableIntrinsic *> llvm::FindDbgAddrUses(Value *V) {
   return Declares;
 }
 
-void llvm::findDbgValues(SmallVectorImpl<DbgValueInst *> &DbgValues, Value *V) {
+void llvm::findDbgValues(SmallVectorImpl<DbgValueInst *> &DbgValues, Value *V, bool isPhi) {
   // This function is hot. Check whether the value has any metadata to avoid a
   // DenseMap lookup.
   if (!V->isUsedByMetadata())
     return;
   if (auto *L = LocalAsMetadata::getIfExists(V))
     if (auto *MDV = MetadataAsValue::getIfExists(V->getContext(), L))
-      for (User *U : MDV->users())
-        if (DbgValueInst *DVI = dyn_cast<DbgValueInst>(U))
+      for (User *U : MDV->users()) {
+        if (DbgValues.size() > 50)
+          return;
+        if (DbgValueInst *DVI = dyn_cast<DbgValueInst>(U)) {
+          if (isPhi && DVI->getOperand(3) == MetadataAsValue::get(V->getContext(), ValueAsMetadata::get(V)))
+            continue;
           DbgValues.push_back(DVI);
+        }
+      }
 }
 
 void llvm::findDbgUsers(SmallVectorImpl<DbgVariableIntrinsic *> &DbgUsers,
@@ -1531,9 +1537,14 @@ void llvm::findDbgUsers(SmallVectorImpl<DbgVariableIntrinsic *> &DbgUsers,
     return;
   if (auto *L = LocalAsMetadata::getIfExists(V))
     if (auto *MDV = MetadataAsValue::getIfExists(V->getContext(), L))
-      for (User *U : MDV->users())
+      for (User *U : MDV->users()) {
+        if (DbgUsers.size() > 50)
+          return;
         if (DbgVariableIntrinsic *DII = dyn_cast<DbgVariableIntrinsic>(U))
-          DbgUsers.push_back(DII);
+          if (DII->getOperand(0) == MetadataAsValue::get(V->getContext(), ValueAsMetadata::get(V)) ||
+               DII->getOperand(3) == MetadataAsValue::get(V->getContext(), ValueAsMetadata::get(V)))
+            DbgUsers.push_back(DII);
+      }
 }
 
 bool llvm::replaceDbgDeclare(Value *Address, Value *NewAddress,
@@ -1627,16 +1638,68 @@ bool llvm::salvageDebugInfoForDbgValues(
     // description.
     bool StackValue = isa<DbgValueInst>(DII);
 
-    DIExpression *DIExpr =
-        salvageDebugInfoImpl(I, DII->getExpression(), StackValue);
+    bool HasTwoRegOps = false;
+    DIExpression *DIExpr = salvageDebugInfoImpl(I, DII->getExpression(),
+                                                DII->getVariable(),
+                                                StackValue, &HasTwoRegOps);
 
     // salvageDebugInfoImpl should fail on examining the first element of
     // DbgUsers, or none of them.
     if (!DIExpr)
       return false;
 
-    DII->setOperand(0, wrapMD(I.getOperand(0)));
-    DII->setOperand(2, MetadataAsValue::get(Ctx, DIExpr));
+    if (wrapMD(&I) != DII->getOperand(3) && !HasTwoRegOps && I.getNumOperands() > 1) {
+      // Salvaging instruction I and update dbg.value call
+      // dbg.value call doesn't have the same register as the fourth
+      // argument as the instruction and the instruction doesn't have
+      // two registers as operands.
+      if (dyn_cast_or_null<ConstantInt>(I.getOperand(1))) {
+        DII->setOperand(0, wrapMD(I.getOperand(0)));
+        DII->setOperand(2, MetadataAsValue::get(Ctx, DIExpr));
+      } else if (dyn_cast_or_null<ConstantInt>(I.getOperand(0))) {
+        DII->setOperand(0, wrapMD(I.getOperand(1)));
+        DII->setOperand(2, MetadataAsValue::get(Ctx, DIExpr));
+      }
+    } else if (HasTwoRegOps) {
+      // The instruction that is being salvaged has two registers
+      // as it's operands. Update the dbg.value call so that those
+      // two become the first and fourth arguments respectively.
+      DII->setOperand(0, wrapMD(I.getOperand(0)));
+      DII->setOperand(2, MetadataAsValue::get(Ctx, DIExpr));
+      DII->setOperand(3, wrapMD(I.getOperand(1)));
+    } else if (wrapMD(&I) == DII->getOperand(3)) {
+      // Salvage the instruction in which the target register
+      // is the fourth argument in the dbg.value call. Replace
+      // that register with the first operand from the instruction
+      // and update the second DIExpression.
+      DII->setOperand(2, DII->getOperand(2));
+      DII->setOperand(3, wrapMD(I.getOperand(0)));
+      auto oldMetadataExprValPiece =
+        cast<MetadataAsValue>(DII->getOperand(4))->getMetadata();
+      // Old elements of the second DIExpression (fifth argument of dbg.value)
+      auto OldExprValPieceElements =
+        cast<DIExpression>(oldMetadataExprValPiece)->getElements();
+      auto ExprSize = DII->getExpression()->getElements().size();
+      // New elements from the salvagining of instruction I,
+      // without the old ones.
+      auto NewExprElements = makeArrayRef(DIExpr->getElements().data(),
+                                          DIExpr->getElements().size() - ExprSize);
+      if (!OldExprValPieceElements.size()) {
+        // If there are no old elements, just assign them
+        auto NewMetadaExpr =
+          MetadataAsValue::get(Ctx, DIExpression::get(Ctx, NewExprElements));
+        DII->setOperand(4, NewMetadaExpr);
+      } else {
+        // If the second DIExpression wasn't empty, append it with
+        // the new elements
+        auto NewExpr = DIExpression::get(Ctx, NewExprElements);
+        auto NewDIExpression = DIExpression::append(NewExpr, OldExprValPieceElements);
+        DII->setOperand(4, MetadataAsValue::get(Ctx, NewDIExpression));
+      }
+    } else {
+      DII->setOperand(0, wrapMD(I.getOperand(0)));
+      DII->setOperand(2, MetadataAsValue::get(Ctx, DIExpr));
+    }
     LLVM_DEBUG(dbgs() << "SALVAGE: " << *DII << '\n');
   }
 
@@ -1645,7 +1708,9 @@ bool llvm::salvageDebugInfoForDbgValues(
 
 DIExpression *llvm::salvageDebugInfoImpl(Instruction &I,
                                          DIExpression *SrcDIExpr,
-                                         bool WithStackValue) {
+                                         DILocalVariable *Var,
+                                         bool WithStackValue,
+                                         bool *HasTwoRegOps) {
   auto &M = *I.getModule();
   auto &DL = M.getDataLayout();
 
@@ -1676,6 +1741,22 @@ DIExpression *llvm::salvageDebugInfoImpl(Instruction &I,
     // No-op casts and zexts are irrelevant for debug info.
     if (CI->isNoopCast(DL) || isa<ZExtInst>(&I))
       return SrcDIExpr;
+    else if (CI->getOpcode() == Instruction::Trunc) {
+      Type *SrcType = CI->getSrcTy();
+      Type *DestType = CI->getDestTy();
+      if (!SrcType->isIntegerTy() || !DestType->isIntegerTy())
+        return nullptr;
+      uint64_t SrcBits = SrcType->getPrimitiveSizeInBits();
+      uint64_t DestBits = DestType->getPrimitiveSizeInBits();
+      auto Signedness = Var->getSignedness();
+      if (!Signedness)
+        return nullptr;
+      bool Signed = *Signedness == DIBasicType::Signedness::Signed;
+      dwarf::TypeKind TK =
+          Signed ? dwarf::DW_ATE_signed : dwarf::DW_ATE_unsigned;
+      return applyOps({dwarf::DW_OP_LLVM_convert, DestBits, TK,
+                       dwarf::DW_OP_LLVM_convert, SrcBits, TK});
+    }
     return nullptr;
   } else if (auto *GEP = dyn_cast<GetElementPtrInst>(&I)) {
     unsigned BitWidth =
@@ -1689,8 +1770,42 @@ DIExpression *llvm::salvageDebugInfoImpl(Instruction &I,
     }
   } else if (auto *BI = dyn_cast<BinaryOperator>(&I)) {
     // Rewrite binary operations with constant integer operands.
-    auto *ConstInt = dyn_cast<ConstantInt>(I.getOperand(1));
-    if (!ConstInt || ConstInt->getBitWidth() > 64)
+    ConstantInt *ConstInt = nullptr;
+    if (dyn_cast_or_null<ConstantInt>(I.getOperand(1)))
+      ConstInt = dyn_cast<ConstantInt>(I.getOperand(1));
+    else
+      ConstInt = dyn_cast<ConstantInt>(I.getOperand(0));
+
+    // Salvage binary instructions that have two registers as operands.
+    if (!ConstInt) {
+      *HasTwoRegOps = true;
+      switch (BI->getOpcode()) {
+      case Instruction::Add:
+        return applyOps({dwarf::DW_OP_LLVM_reg_plus});
+      case Instruction::Sub:
+        return applyOps({dwarf::DW_OP_LLVM_reg_minus});
+      case Instruction::Mul:
+        return applyOps({dwarf::DW_OP_LLVM_reg_mul});
+      case Instruction::SDiv:
+        return applyOps({dwarf::DW_OP_LLVM_reg_div});
+      case Instruction::Or:
+        return applyOps({dwarf::DW_OP_LLVM_reg_or});
+      case Instruction::And:
+        return applyOps({dwarf::DW_OP_LLVM_reg_and});
+      case Instruction::Xor:
+        return applyOps({dwarf::DW_OP_LLVM_reg_xor});
+      case Instruction::Shl:
+        return applyOps({dwarf::DW_OP_LLVM_reg_shl});
+      case Instruction::LShr:
+        return applyOps({dwarf::DW_OP_LLVM_reg_shr});
+      case Instruction::AShr:
+        return applyOps({dwarf::DW_OP_LLVM_reg_shra});
+      default:
+        return nullptr;
+      }
+    }
+
+    if (ConstInt->getBitWidth() > 64)
       return nullptr;
 
     uint64_t Val = ConstInt->getSExtValue();
@@ -1774,7 +1889,6 @@ static bool rewriteDebugUsers(
     DbgValReplacement DVR = RewriteExpr(*DII);
     if (!DVR)
       continue;
-
     DII->setOperand(0, wrapValueInMetadata(Ctx, &To));
     DII->setOperand(2, MetadataAsValue::get(Ctx, *DVR));
     LLVM_DEBUG(dbgs() << "REWRITE:  " << *DII << '\n');

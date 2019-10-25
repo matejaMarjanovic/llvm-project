@@ -36,10 +36,14 @@ using namespace llvm;
 /// intrinsics for variables.
 ///
 
-Value *DbgVariableIntrinsic::getVariableLocation(bool AllowNullOp) const {
-  Value *Op = getArgOperand(0);
+Value *DbgVariableIntrinsic::getVariableLocation(bool AllowNullOp,
+                                                 unsigned i) const {
+  Value *Op = getArgOperand(i);
   if (AllowNullOp && !Op)
     return nullptr;
+
+  if (Op == UndefValue::get(Op->getType()))
+    return Op;
 
   auto *MD = cast<MetadataAsValue>(Op)->getMetadata();
   if (auto *V = dyn_cast<ValueAsMetadata>(MD))

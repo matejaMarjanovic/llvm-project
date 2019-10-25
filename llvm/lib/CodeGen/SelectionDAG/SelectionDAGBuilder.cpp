@@ -1234,7 +1234,8 @@ void SelectionDAGBuilder::salvageUnresolvedDbgValue(DanglingDebugInfo &DDI) {
   // variable. FIXME: Further work could recover those too.
   while (isa<Instruction>(V)) {
     Instruction &VAsInst = *cast<Instruction>(V);
-    DIExpression *NewExpr = salvageDebugInfoImpl(VAsInst, Expr, StackValue);
+    DIExpression *NewExpr = salvageDebugInfoImpl(VAsInst, Expr, Var,
+                                                 StackValue);
 
     // If we cannot salvage any further, and haven't yet found a suitable debug
     // expression, bail out.

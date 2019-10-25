@@ -609,7 +609,7 @@ static bool UpgradeIntrinsicFunction1(Function *F, Function *&NewFn) {
     break;
   }
   case 'd': {
-    if (Name == "dbg.value" && F->arg_size() == 4) {
+    if (Name == "dbg.value" && (F->arg_size() == 4 || F->arg_size() == 3)) {
       rename(F);
       NewFn = Intrinsic::getDeclaration(F->getParent(), Intrinsic::dbg_value);
       return true;
@@ -3587,20 +3587,40 @@ void llvm::UpgradeIntrinsicCall(CallInst *CI, Function *NewFn) {
     NewCall = Builder.CreateCall(NewFn, {CI->getArgOperand(0)});
     break;
 
-  case Intrinsic::dbg_value:
+  case Intrinsic::dbg_value: {
     // Upgrade from the old version that had an extra offset argument.
-    assert(CI->getNumArgOperands() == 4);
+    assert(CI->getNumArgOperands() == 4 || CI->getNumArgOperands() == 3);
     // Drop nonzero offsets instead of attempting to upgrade them.
-    if (auto *Offset = dyn_cast_or_null<Constant>(CI->getArgOperand(1)))
-      if (Offset->isZeroValue()) {
-        NewCall = Builder.CreateCall(
-            NewFn,
-            {CI->getArgOperand(0), CI->getArgOperand(2), CI->getArgOperand(3)});
-        break;
+    if (CI->getNumArgOperands() == 4) {
+      if (auto *Offset = dyn_cast_or_null<Constant>(CI->getArgOperand(1))) {
+         if (Offset->isZeroValue()) {
+           NewCall = Builder.CreateCall(
+               NewFn,
+               {CI->getArgOperand(0), CI->getArgOperand(2), CI->getArgOperand(3),
+                UndefValue::get(CI->getArgOperand(0)->getType()),
+                MetadataAsValue::get(C, DIExpression::get(C, {}))});
+           break;
+         }
       }
+    } else if (CI->getNumArgOperands() == 3) {
+      if (dyn_cast_or_null<Constant>(CI->getArgOperand(1)))
+         NewCall = Builder.CreateCall(
+             NewFn,
+             {CI->getArgOperand(0), CI->getArgOperand(2),
+              MetadataAsValue::get(C, DIExpression::get(C, {})),
+              UndefValue::get(CI->getArgOperand(0)->getType()),
+              MetadataAsValue::get(C, DIExpression::get(C, {}))});
+      else
+         NewCall = Builder.CreateCall(
+             NewFn,
+             {CI->getArgOperand(0), CI->getArgOperand(1), CI->getArgOperand(2),
+              UndefValue::get(CI->getArgOperand(0)->getType()),
+              MetadataAsValue::get(C, DIExpression::get(C, {}))});
+      break;
+    }
     CI->eraseFromParent();
     return;
-
+  }
   case Intrinsic::x86_xop_vfrcz_ss:
   case Intrinsic::x86_xop_vfrcz_sd:
     NewCall = Builder.CreateCall(NewFn, {CI->getArgOperand(1)});

@@ -902,6 +902,16 @@ bool DIExpression::isValid() const {
       return I->get() == expr_op_begin()->get() && I->getArg(0) == 1 &&
              getNumElements() == 2;
     }
+    case dwarf::DW_OP_LLVM_reg_plus:
+    case dwarf::DW_OP_LLVM_reg_minus:
+    case dwarf::DW_OP_LLVM_reg_mul:
+    case dwarf::DW_OP_LLVM_reg_div:
+    case dwarf::DW_OP_LLVM_reg_or:
+    case dwarf::DW_OP_LLVM_reg_and:
+    case dwarf::DW_OP_LLVM_reg_xor:
+    case dwarf::DW_OP_LLVM_reg_shl:
+    case dwarf::DW_OP_LLVM_reg_shr:
+    case dwarf::DW_OP_LLVM_reg_shra:
     case dwarf::DW_OP_LLVM_convert:
     case dwarf::DW_OP_LLVM_tag_offset:
     case dwarf::DW_OP_constu:

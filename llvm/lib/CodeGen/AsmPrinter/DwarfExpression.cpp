@@ -482,6 +482,18 @@ void DwarfExpression::addExpression(DIExpressionCursor &&ExprCursor,
       }
       break;
     }
+    case dwarf::DW_OP_LLVM_reg_plus:
+    case dwarf::DW_OP_LLVM_reg_minus:
+    case dwarf::DW_OP_LLVM_reg_mul:
+    case dwarf::DW_OP_LLVM_reg_div:
+    case dwarf::DW_OP_LLVM_reg_or:
+    case dwarf::DW_OP_LLVM_reg_and:
+    case dwarf::DW_OP_LLVM_reg_xor:
+    case dwarf::DW_OP_LLVM_reg_shl:
+    case dwarf::DW_OP_LLVM_reg_shr:
+    case dwarf::DW_OP_LLVM_reg_shra:
+    // TODO: Handle this.
+      break;
     case dwarf::DW_OP_stack_value:
       LocationKind = Implicit;
       break;

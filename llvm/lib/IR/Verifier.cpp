@@ -2972,9 +2972,10 @@ void Verifier::visitCallBase(CallBase &Call) {
     Assert(!FTy->getReturnType()->isTokenTy(),
            "Return type cannot be token for indirect call!");
 
-  if (Function *F = Call.getCalledFunction())
+  if (Function *F = Call.getCalledFunction()) {
     if (Intrinsic::ID ID = (Intrinsic::ID)F->getIntrinsicID())
       visitIntrinsicCall(ID, Call);
+  }
 
   // Verify that a callsite has at most one "deopt", at most one "funclet", at
   // most one "gc-transition", and at most one "cfguardtarget" operand bundle.

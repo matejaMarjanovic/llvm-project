@@ -90,7 +90,9 @@ namespace llvm {
     Instruction *
     insertDbgValueIntrinsic(llvm::Value *Val, DILocalVariable *VarInfo,
                             DIExpression *Expr, const DILocation *DL,
-                            BasicBlock *InsertBB, Instruction *InsertBefore);
+                            BasicBlock *InsertBB, Instruction *InsertBefore,
+                            llvm::Value *V2 = nullptr,
+                            DIExpression *ExprValPiece = nullptr);
 
   public:
     /// Construct a builder for a module.
@@ -837,7 +839,9 @@ namespace llvm {
                                          DILocalVariable *VarInfo,
                                          DIExpression *Expr,
                                          const DILocation *DL,
-                                         BasicBlock *InsertAtEnd);
+                                         BasicBlock *InsertAtEnd,
+                                         llvm::Value *V2 = nullptr,
+                                         DIExpression *ExprValPiece = nullptr);
 
     /// Insert a new llvm.dbg.value intrinsic call.
     /// \param Val          llvm::Value of the variable
@@ -849,7 +853,9 @@ namespace llvm {
                                          DILocalVariable *VarInfo,
                                          DIExpression *Expr,
                                          const DILocation *DL,
-                                         Instruction *InsertBefore);
+                                         Instruction *InsertBefore,
+                                         Value *V2 = nullptr,
+                                         DIExpression *ExprValPiece = nullptr);
 
     /// Replace the vtable holder in the given type.
     ///

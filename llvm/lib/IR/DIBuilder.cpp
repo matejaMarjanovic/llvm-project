@@ -880,18 +880,23 @@ Instruction *DIBuilder::insertDbgValueIntrinsic(Value *V,
                                                 DILocalVariable *VarInfo,
                                                 DIExpression *Expr,
                                                 const DILocation *DL,
-                                                Instruction *InsertBefore) {
+                                                Instruction *InsertBefore,
+                                                Value *V2,
+                                                DIExpression *ExprValPiece) {
   return insertDbgValueIntrinsic(
       V, VarInfo, Expr, DL, InsertBefore ? InsertBefore->getParent() : nullptr,
-      InsertBefore);
+      InsertBefore, V2, ExprValPiece);
 }
 
 Instruction *DIBuilder::insertDbgValueIntrinsic(Value *V,
                                                 DILocalVariable *VarInfo,
                                                 DIExpression *Expr,
                                                 const DILocation *DL,
-                                                BasicBlock *InsertAtEnd) {
-  return insertDbgValueIntrinsic(V, VarInfo, Expr, DL, InsertAtEnd, nullptr);
+                                                BasicBlock *InsertAtEnd,
+                                                Value *V2,
+                                                DIExpression *ExprValPiece) {
+  return insertDbgValueIntrinsic(
+      V, VarInfo, Expr, DL, InsertAtEnd, nullptr, V2, ExprValPiece);
 }
 
 /// Return an IRBuilder for inserting dbg.declare and dbg.value intrinsics. This
@@ -941,7 +946,8 @@ Instruction *DIBuilder::insertDeclare(Value *Storage, DILocalVariable *VarInfo,
 
 Instruction *DIBuilder::insertDbgValueIntrinsic(
     Value *V, DILocalVariable *VarInfo, DIExpression *Expr,
-    const DILocation *DL, BasicBlock *InsertBB, Instruction *InsertBefore) {
+    const DILocation *DL, BasicBlock *InsertBB, Instruction *InsertBefore,
+    Value *V2, DIExpression *ExprValPiece) {
   assert(V && "no value passed to dbg.value");
   assert(VarInfo && "empty or invalid DILocalVariable* passed to dbg.value");
   assert(DL && "Expected debug loc");
@@ -953,9 +959,19 @@ Instruction *DIBuilder::insertDbgValueIntrinsic(
 
   trackIfUnresolved(VarInfo);
   trackIfUnresolved(Expr);
+
+  if (!V2) {
+    V2 = UndefValue::get(V->getType());
+  }
+  if (!ExprValPiece) {
+    ExprValPiece = DIExpression::get(VMContext, {});
+  }
+
   Value *Args[] = {getDbgIntrinsicValueImpl(VMContext, V),
                    MetadataAsValue::get(VMContext, VarInfo),
-                   MetadataAsValue::get(VMContext, Expr)};
+                   MetadataAsValue::get(VMContext, Expr),
+                   getDbgIntrinsicValueImpl(VMContext, V2),
+                   MetadataAsValue::get(VMContext, ExprValPiece)};
 
   IRBuilder<> B = getIRBForDbgInsertion(DL, InsertBB, InsertBefore);
   return B.CreateCall(ValueFn, Args);
