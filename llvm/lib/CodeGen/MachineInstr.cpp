@@ -823,6 +823,11 @@ const DIExpression *MachineInstr::getDebugExpression() const {
   return cast<DIExpression>(getOperand(3).getMetadata());
 }
 
+const DIExpression *MachineInstr::getDebugExpressionValPiece() const {
+  assert(isDebugValue() && "not a DBG_VALUE");
+  return cast<DIExpression>(getOperand(5).getMetadata());
+}
+
 bool MachineInstr::isDebugEntryValue() const {
   return isDebugValue() && getDebugExpression()->isEntryValue();
 }
@@ -1758,12 +1763,12 @@ void MachineInstr::print(raw_ostream &OS, ModuleSlotTracker &MST,
   }
 
   // Print extra comments for DEBUG_VALUE.
-  if (isDebugValue() && getOperand(e - 2).isMetadata()) {
+  if (isDebugValue() && getOperand(e - 4).isMetadata()) {
     if (!HaveSemi) {
       OS << ";";
       HaveSemi = true;
     }
-    auto *DV = cast<DILocalVariable>(getOperand(e - 2).getMetadata());
+    auto *DV = cast<DILocalVariable>(getOperand(e - 4).getMetadata());
     OS << " line no:" <<  DV->getLine();
     if (auto *InlinedAt = debugLoc->getInlinedAt()) {
       DebugLoc InlinedAtDL(InlinedAt);
@@ -2014,18 +2019,55 @@ void MachineInstr::emitError(StringRef Msg) const {
 MachineInstrBuilder llvm::BuildMI(MachineFunction &MF, const DebugLoc &DL,
                                   const MCInstrDesc &MCID, bool IsIndirect,
                                   Register Reg, const MDNode *Variable,
-                                  const MDNode *Expr) {
+                                  const MDNode *Expr, Register Reg2,
+                                  const MDNode *ExprValPiece) {
   assert(isa<DILocalVariable>(Variable) && "not a variable");
   assert(cast<DIExpression>(Expr)->isValid() && "not an expression");
   assert(cast<DILocalVariable>(Variable)->isValidLocationForIntrinsic(DL) &&
          "Expected inlined-at fields to agree");
+  if (!ExprValPiece)
+    ExprValPiece = DIExpression::get(MF.getFunction().getContext(), {});
   auto MIB = BuildMI(MF, DL, MCID).addReg(Reg, RegState::Debug);
   if (IsIndirect)
     MIB.addImm(0U);
   else
     MIB.addReg(0U, RegState::Debug);
-  return MIB.addMetadata(Variable).addMetadata(Expr);
+  return MIB.addMetadata(Variable)
+            .addMetadata(Expr)
+            .addReg(Reg2, RegState::Debug)
+            .addMetadata(ExprValPiece);
 }
+
+MachineInstrBuilder llvm::BuildMI(MachineFunction &MF, const DebugLoc &DL,
+                                  const MCInstrDesc &MCID, bool IsIndirect,
+                                  MachineOperand &MO, const MDNode *Variable,
+                                  const MDNode *Expr, MachineOperand &MO2,
+                                  const MDNode *ExprValPiece) {
+  assert(isa<DILocalVariable>(Variable) && "not a variable");
+  assert(cast<DIExpression>(Expr)->isValid() && "not an expression");
+  assert(cast<DILocalVariable>(Variable)->isValidLocationForIntrinsic(DL) &&
+         "Expected inlined-at fields to agree");
+  if (!ExprValPiece)
+    ExprValPiece = DIExpression::get(MF.getFunction().getContext(), {});
+  if (MO.isReg()) {
+    if (MO2.isReg())
+      return BuildMI(MF, DL, MCID, IsIndirect, MO.getReg(), Variable, Expr,
+                     MO2.getReg(), ExprValPiece);
+    else
+      return BuildMI(MF, DL, MCID, IsIndirect, MO.getReg(), Variable, Expr);
+  }
+
+  auto MIB = BuildMI(MF, DL, MCID).add(MO);
+  if (IsIndirect)
+    MIB.addImm(0U);
+  else
+    MIB.addReg(0U, RegState::Debug);
+
+  return MIB.addMetadata(Variable)
+            .addMetadata(Expr)
+            .add(MO2)
+            .addMetadata(ExprValPiece);
+ }
 
 MachineInstrBuilder llvm::BuildMI(MachineFunction &MF, const DebugLoc &DL,
                                   const MCInstrDesc &MCID, bool IsIndirect,
@@ -2043,18 +2085,41 @@ MachineInstrBuilder llvm::BuildMI(MachineFunction &MF, const DebugLoc &DL,
     MIB.addImm(0U);
   else
     MIB.addReg(0U, RegState::Debug);
-  return MIB.addMetadata(Variable).addMetadata(Expr);
+  const DIExpression *ExprValPiece = DIExpression::get(MF.getFunction().getContext(), {});
+  return MIB.addMetadata(Variable)
+            .addMetadata(Expr)
+            .addReg(0U, RegState::Debug)
+            .addMetadata(ExprValPiece);
  }
 
 MachineInstrBuilder llvm::BuildMI(MachineBasicBlock &BB,
                                   MachineBasicBlock::iterator I,
                                   const DebugLoc &DL, const MCInstrDesc &MCID,
                                   bool IsIndirect, Register Reg,
-                                  const MDNode *Variable, const MDNode *Expr) {
+                                  const MDNode *Variable, const MDNode *Expr,
+                                  Register Reg2, const MDNode *ExprValPiece) {
   MachineFunction &MF = *BB.getParent();
-  MachineInstr *MI = BuildMI(MF, DL, MCID, IsIndirect, Reg, Variable, Expr);
+  if (!ExprValPiece)
+    ExprValPiece = DIExpression::get(MF.getFunction().getContext(), {});
+  MachineInstr *MI = BuildMI(MF, DL, MCID, IsIndirect, Reg, Variable, Expr,
+                             Reg2, ExprValPiece);
   BB.insert(I, MI);
   return MachineInstrBuilder(MF, MI);
+}
+
+MachineInstrBuilder llvm::BuildMI(MachineBasicBlock &BB,
+                                  MachineBasicBlock::iterator I,
+                                  const DebugLoc &DL, const MCInstrDesc &MCID,
+                                  bool IsIndirect, MachineOperand &MO,
+                                  const MDNode *Variable, const MDNode *Expr,
+                                  MachineOperand &MO2, const MDNode *ExprValPiece) {
+  MachineFunction &MF = *BB.getParent();
+  if (!ExprValPiece)
+    ExprValPiece = DIExpression::get(MF.getFunction().getContext(), {});
+  MachineInstr *MI = BuildMI(MF, DL, MCID, IsIndirect, MO, Variable, Expr,
+                             MO2, ExprValPiece);
+  BB.insert(I, MI);
+  return MachineInstrBuilder(MF, *MI);
 }
 
 MachineInstrBuilder llvm::BuildMI(MachineBasicBlock &BB,
@@ -2088,11 +2153,14 @@ MachineInstr *llvm::buildDbgValueForSpill(MachineBasicBlock &BB,
                                           const MachineInstr &Orig,
                                           int FrameIndex) {
   const DIExpression *Expr = computeExprForSpill(Orig);
+  const DIExpression *ExprValPiece = DIExpression::get(BB.getParent()->getFunction().getContext(), {});
   return BuildMI(BB, I, Orig.getDebugLoc(), Orig.getDesc())
       .addFrameIndex(FrameIndex)
       .addImm(0U)
       .addMetadata(Orig.getDebugVariable())
-      .addMetadata(Expr);
+      .addMetadata(Expr)
+      .addReg(0U, RegState::Debug)
+      .addMetadata(ExprValPiece);
 }
 
 void llvm::updateDbgValueForSpill(MachineInstr &Orig, int FrameIndex) {

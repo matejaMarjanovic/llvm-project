@@ -17,6 +17,7 @@
 #include "llvm/BinaryFormat/Dwarf.h"
 #include "llvm/CodeGen/Register.h"
 #include "llvm/CodeGen/TargetRegisterInfo.h"
+#include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <algorithm>

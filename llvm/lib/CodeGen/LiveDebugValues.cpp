@@ -84,7 +84,7 @@ STATISTIC(NumRemoved, "Number of DBG_VALUE instructions removed");
 // register, returns the number of this register. In the other case, returns 0.
 static Register isDbgValueDescribedByReg(const MachineInstr &MI) {
   assert(MI.isDebugValue() && "expected a DBG_VALUE");
-  assert(MI.getNumOperands() == 4 && "malformed DBG_VALUE");
+  assert(MI.getNumOperands() == 6 && "malformed DBG_VALUE");
   // If location of variable is described using a register (directly
   // or indirectly), this register is always a first operand.
   return MI.getOperand(0).isReg() ? MI.getOperand(0).getReg() : Register();
@@ -193,7 +193,7 @@ private:
       static_assert((sizeof(Loc) == sizeof(uint64_t)),
                     "hash does not cover all members of Loc");
       assert(MI.isDebugValue() && "not a DBG_VALUE");
-      assert(MI.getNumOperands() == 4 && "malformed DBG_VALUE");
+      assert(MI.getNumOperands() == 6 && "malformed DBG_VALUE");
       if (int RegNo = isDbgValueDescribedByReg(MI)) {
         Kind = MI.isDebugEntryValue() ? EntryValueKind : RegisterKind;
         Loc.RegNo = RegNo;

@@ -432,7 +432,16 @@ inline MachineInstrBuilder BuildMI(MachineBasicBlock *BB, const DebugLoc &DL,
 MachineInstrBuilder BuildMI(MachineFunction &MF, const DebugLoc &DL,
                             const MCInstrDesc &MCID, bool IsIndirect,
                             Register Reg, const MDNode *Variable,
-                            const MDNode *Expr);
+                            const MDNode *Expr, Register Reg2 = 0,
+                            const MDNode *ExprValPiece = nullptr);
+
+/// This version of the builder builds a DBG_VALUE intrinsic
+/// for a MachineOperand.
+MachineInstrBuilder BuildMI(MachineFunction &MF, const DebugLoc &DL,
+                            const MCInstrDesc &MCID, bool IsIndirect,
+                            MachineOperand &MO, const MDNode *Variable,
+                            const MDNode *Expr, MachineOperand &MO2,
+                            const MDNode *ExprValPiece = nullptr);
 
 /// This version of the builder builds a DBG_VALUE intrinsic
 /// for a MachineOperand.
@@ -448,7 +457,17 @@ MachineInstrBuilder BuildMI(MachineBasicBlock &BB,
                             MachineBasicBlock::iterator I, const DebugLoc &DL,
                             const MCInstrDesc &MCID, bool IsIndirect,
                             Register Reg, const MDNode *Variable,
-                            const MDNode *Expr);
+                            const MDNode *Expr, Register Reg2 = 0,
+                            const MDNode *ExprValPiece = nullptr);
+
+/// This version of the builder builds a DBG_VALUE intrinsic
+/// for a machine operand and inserts it at position I.
+MachineInstrBuilder BuildMI(MachineBasicBlock &BB,
+                            MachineBasicBlock::iterator I, const DebugLoc &DL,
+                            const MCInstrDesc &MCID, bool IsIndirect,
+                            MachineOperand &MO, const MDNode *Variable,
+                            const MDNode *Expr, MachineOperand &MO2,
+                            const MDNode *ExprValPiece = nullptr);
 
 /// This version of the builder builds a DBG_VALUE intrinsic
 /// for a machine operand and inserts it at position I.

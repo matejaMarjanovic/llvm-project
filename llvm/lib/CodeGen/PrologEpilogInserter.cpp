@@ -1204,41 +1204,50 @@ void PEI::replaceFrameIndices(MachineBasicBlock *BB, MachineFunction &MF,
       // way with simply the frame index and offset rather than any
       // target-specific addressing mode.
       if (MI.isDebugValue()) {
-        assert(i == 0 && "Frame indices can only appear as the first "
+        assert((i == 0 || i == 4) && "Frame indices can only appear as the first "
                          "operand of a DBG_VALUE machine instruction");
         unsigned Reg;
-        unsigned FrameIdx = MI.getOperand(0).getIndex();
+        unsigned FrameIdx = MI.getOperand(i).getIndex();
         unsigned Size = MF.getFrameInfo().getObjectSize(FrameIdx);
 
         int64_t Offset =
             TFI->getFrameIndexReference(MF, FrameIdx, Reg);
-        MI.getOperand(0).ChangeToRegister(Reg, false /*isDef*/);
-        MI.getOperand(0).setIsDebug();
+        MI.getOperand(i).ChangeToRegister(Reg, false /*isDef*/);
+        MI.getOperand(i).setIsDebug();
 
-        const DIExpression *DIExpr = MI.getDebugExpression();
+        const DIExpression *DIExpr;
+        if (i == 0)
+          DIExpr = MI.getDebugExpression();
+        else
+          DIExpr = MI.getDebugExpressionValPiece();
 
-        // If we have a direct DBG_VALUE, and its location expression isn't
-        // currently complex, then adding an offset will morph it into a
-        // complex location that is interpreted as being a memory address.
-        // This changes a pointer-valued variable to dereference that pointer,
-        // which is incorrect. Fix by adding DW_OP_stack_value.
-        unsigned PrependFlags = DIExpression::ApplyOffset;
-        if (!MI.isIndirectDebugValue() && !DIExpr->isComplex())
-          PrependFlags |= DIExpression::StackValue;
+        if (!i) {
+          // If we have a direct DBG_VALUE, and its location expression isn't
+          // currently complex, then adding an offset will morph it into a
+          // complex location that is interpreted as being a memory address.
+          // This changes a pointer-valued variable to dereference that pointer,
+          // which is incorrect. Fix by adding DW_OP_stack_value.
+          unsigned PrependFlags = DIExpression::ApplyOffset;
+          if (!MI.isIndirectDebugValue() && !DIExpr->isComplex())
+            PrependFlags |= DIExpression::StackValue;
 
-        // If we have DBG_VALUE that is indirect and has a Implicit location
-        // expression need to insert a deref before prepending a Memory
-        // location expression. Also after doing this we change the DBG_VALUE
-        // to be direct.
-        if (MI.isIndirectDebugValue() && DIExpr->isImplicit()) {
-          SmallVector<uint64_t, 2> Ops = {dwarf::DW_OP_deref_size, Size};
-          bool WithStackValue = true;
-          DIExpr = DIExpression::prependOpcodes(DIExpr, Ops, WithStackValue);
-          // Make the DBG_VALUE direct.
-          MI.getOperand(1).ChangeToRegister(0, false);
+          // If we have DBG_VALUE that is indirect and has a Implicit location
+          // expression need to insert a deref before prepending a Memory
+          // location expression. Also after doing this we change the DBG_VALUE
+          // to be direct.
+          if (MI.isIndirectDebugValue() && DIExpr->isImplicit()) {
+            SmallVector<uint64_t, 2> Ops = {dwarf::DW_OP_deref_size, Size};
+            bool WithStackValue = true;
+            DIExpr = DIExpression::prependOpcodes(DIExpr, Ops, WithStackValue);
+            // Make the DBG_VALUE direct.
+            MI.getOperand(1).ChangeToRegister(0, false);
+          }
+          DIExpr = DIExpression::prepend(DIExpr, PrependFlags, Offset);
         }
-        DIExpr = DIExpression::prepend(DIExpr, PrependFlags, Offset);
-        MI.getOperand(3).setMetadata(DIExpr);
+        if (i == 0)
+          MI.getOperand(3).setMetadata(DIExpr);
+        else
+          MI.getOperand(5).setMetadata(DIExpr);
         continue;
       }
 

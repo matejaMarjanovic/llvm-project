@@ -407,6 +407,10 @@ public:
   /// this DBG_VALUE instruction.
   const DIExpression *getDebugExpression() const;
 
+  /// Return the complex address extra expression referenced by
+  /// this DBG_VALUE instruction.
+  const DIExpression *getDebugExpressionValPiece() const;
+
   /// Return the debug label referenced by
   /// this DBG_LABEL instruction.
   const DILabel *getDebugLabel() const;
