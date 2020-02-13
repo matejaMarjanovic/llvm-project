@@ -88,20 +88,28 @@ MachineInstrBuilder MachineIRBuilder::insertInstr(MachineInstrBuilder MIB) {
 
 MachineInstrBuilder
 MachineIRBuilder::buildDirectDbgValue(Register Reg, const MDNode *Variable,
-                                      const MDNode *Expr) {
+                                      const MDNode *Expr, Register RegValPiece,
+                                      const MDNode *ExprValPiece) {
   assert(isa<DILocalVariable>(Variable) && "not a variable");
   assert(cast<DIExpression>(Expr)->isValid() && "not an expression");
   assert(
       cast<DILocalVariable>(Variable)->isValidLocationForIntrinsic(getDL()) &&
       "Expected inlined-at fields to agree");
+  const DIExpression *DIExprValPiece = nullptr;
+  if (!ExprValPiece)
+    DIExprValPiece = DIExpression::get(getMF().getFunction().getContext(), {});
+  else
+    DIExprValPiece = cast<DIExpression>(ExprValPiece);
   return insertInstr(BuildMI(getMF(), getDL(),
                              getTII().get(TargetOpcode::DBG_VALUE),
-                             /*IsIndirect*/ false, Reg, Variable, Expr));
+                             /*IsIndirect*/ false, Reg, Variable, Expr,
+                             RegValPiece, DIExprValPiece));
 }
 
 MachineInstrBuilder
 MachineIRBuilder::buildIndirectDbgValue(Register Reg, const MDNode *Variable,
-                                        const MDNode *Expr) {
+                                        const MDNode *Expr, Register RegValPiece,
+                                        const MDNode *ExprValPiece) {
   assert(isa<DILocalVariable>(Variable) && "not a variable");
   assert(cast<DIExpression>(Expr)->isValid() && "not an expression");
   assert(
@@ -111,9 +119,15 @@ MachineIRBuilder::buildIndirectDbgValue(Register Reg, const MDNode *Variable,
   // rather than encoding it in the instruction itself.
   const DIExpression *DIExpr = cast<DIExpression>(Expr);
   DIExpr = DIExpression::append(DIExpr, {dwarf::DW_OP_deref});
+  const DIExpression *DIExprValPiece = nullptr;
+  if (!ExprValPiece)
+    DIExprValPiece = DIExpression::get(getMF().getFunction().getContext(), {});
+  else
+    DIExprValPiece = cast<DIExpression>(ExprValPiece);
   return insertInstr(BuildMI(getMF(), getDL(),
                              getTII().get(TargetOpcode::DBG_VALUE),
-                             /*IsIndirect*/ false, Reg, Variable, DIExpr));
+                             /*IsIndirect*/ false, Reg, Variable, DIExpr,
+                             RegValPiece, DIExprValPiece));
 }
 
 MachineInstrBuilder MachineIRBuilder::buildFIDbgValue(int FI,
@@ -128,11 +142,15 @@ MachineInstrBuilder MachineIRBuilder::buildFIDbgValue(int FI,
   // rather than encoding it in the instruction itself.
   const DIExpression *DIExpr = cast<DIExpression>(Expr);
   DIExpr = DIExpression::append(DIExpr, {dwarf::DW_OP_deref});
+  const DIExpression *DIExprValPiece =
+      DIExpression::get(getMF().getFunction().getContext(), {});
   return buildInstr(TargetOpcode::DBG_VALUE)
       .addFrameIndex(FI)
       .addReg(0)
       .addMetadata(Variable)
-      .addMetadata(DIExpr);
+      .addMetadata(DIExpr)
+      .addReg(0U, RegState::Debug)
+      .addMetadata(DIExprValPiece);
 }
 
 MachineInstrBuilder MachineIRBuilder::buildConstDbgValue(const Constant &C,
@@ -156,7 +174,14 @@ MachineInstrBuilder MachineIRBuilder::buildConstDbgValue(const Constant &C,
     MIB.addReg(0U);
   }
 
-  return MIB.addReg(0).addMetadata(Variable).addMetadata(Expr);
+  const DIExpression *DIExprValPiece =
+      DIExpression::get(getMF().getFunction().getContext(), {});
+  return
+  MIB.addReg(0)
+     .addMetadata(Variable)
+     .addMetadata(Expr)
+     .addReg(0U, RegState::Debug)
+     .addMetadata(DIExprValPiece);
 }
 
 MachineInstrBuilder MachineIRBuilder::buildDbgLabel(const MDNode *Label) {

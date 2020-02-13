@@ -345,14 +345,18 @@ public:
   /// Build and insert a DBG_VALUE instruction expressing the fact that the
   /// associated \p Variable lives in \p Reg (suitably modified by \p Expr).
   MachineInstrBuilder buildDirectDbgValue(Register Reg, const MDNode *Variable,
-                                          const MDNode *Expr);
+                                          const MDNode *Expr,
+                                          Register Reg2 = 0,
+                                          const MDNode *ExprValPiece = nullptr);
 
   /// Build and insert a DBG_VALUE instruction expressing the fact that the
   /// associated \p Variable lives in memory at \p Reg (suitably modified by \p
   /// Expr).
   MachineInstrBuilder buildIndirectDbgValue(Register Reg,
                                             const MDNode *Variable,
-                                            const MDNode *Expr);
+                                            const MDNode *Expr,
+                                            Register Reg2 = 0,
+                                            const MDNode *ExprValPiece = nullptr);
 
   /// Build and insert a DBG_VALUE instruction expressing the fact that the
   /// associated \p Variable lives in the stack slot specified by \p FI

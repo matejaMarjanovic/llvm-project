@@ -1406,6 +1406,8 @@ bool FastISel::selectIntrinsicCall(const IntrinsicInst *II) {
     const DbgValueInst *DI = cast<DbgValueInst>(II);
     const MCInstrDesc &II = TII.get(TargetOpcode::DBG_VALUE);
     const Value *V = DI->getValue();
+    const Value *ValPiece = DI->getValue2();
+    const DIExpression* DIExprValPiece = DI->getExpressionValPiece();
     assert(DI->getVariable()->isValidLocationForIntrinsic(DbgLoc) &&
            "Expected inlined-at fields to agree");
     if (!V) {
@@ -1419,24 +1421,37 @@ bool FastISel::selectIntrinsicCall(const IntrinsicInst *II) {
             .addCImm(CI)
             .addReg(0U)
             .addMetadata(DI->getVariable())
-            .addMetadata(DI->getExpression());
+            .addMetadata(DI->getExpression())
+            .addReg(0U)
+            .addMetadata(DIExprValPiece);
       else
         BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II)
             .addImm(CI->getZExtValue())
             .addReg(0U)
             .addMetadata(DI->getVariable())
-            .addMetadata(DI->getExpression());
+            .addMetadata(DI->getExpression())
+            .addReg(0U)
+            .addMetadata(DIExprValPiece);
     } else if (const auto *CF = dyn_cast<ConstantFP>(V)) {
       BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II)
           .addFPImm(CF)
           .addReg(0U)
           .addMetadata(DI->getVariable())
-          .addMetadata(DI->getExpression());
+          .addMetadata(DI->getExpression())
+          .addReg(0U)
+          .addMetadata(DIExprValPiece);
     } else if (unsigned Reg = lookUpRegForValue(V)) {
       // FIXME: This does not handle register-indirect values at offset 0.
-      bool IsIndirect = false;
-      BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II, IsIndirect, Reg,
-              DI->getVariable(), DI->getExpression());
+      if (ValPiece) {
+        unsigned RegValPiece = lookUpRegForValue(ValPiece);
+        BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II, false, Reg,
+                DI->getVariable(), DI->getExpression(), RegValPiece,
+                DIExprValPiece);
+      }
+      else {
+        BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II, false, Reg,
+                DI->getVariable(), DI->getExpression());
+      }
     } else {
       // We can't yet handle anything else here because it would require
       // generating code, thus altering codegen because of debug info.

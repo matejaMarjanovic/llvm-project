@@ -39,14 +39,19 @@ private:
   union {
     struct {
       SDNode *Node;         ///< Valid for expressions.
+      SDNode *Node2;         ///< Valid for expressions.
       unsigned ResNo;       ///< Valid for expressions.
     } s;
     const Value *Const;     ///< Valid for constants.
     unsigned FrameIx;       ///< Valid for stack objects.
-    unsigned VReg;          ///< Valid for registers.
+    struct {
+      unsigned VReg;          ///< Valid for registers.
+      unsigned VReg2;         ///< Valid for registers.
+    } reg;
   } u;
   DIVariable *Var;
   DIExpression *Expr;
+  DIExpression *ExprValPiece;
   DebugLoc DL;
   unsigned Order;
   enum DbgValueKind kind;
@@ -56,33 +61,38 @@ private:
 
 public:
   /// Constructor for non-constants.
-  SDDbgValue(DIVariable *Var, DIExpression *Expr, SDNode *N, unsigned R,
-             bool indir, DebugLoc dl, unsigned O)
-      : Var(Var), Expr(Expr), DL(std::move(dl)), Order(O), IsIndirect(indir) {
+  SDDbgValue(DIVariable *Var, DIExpression *Expr, DIExpression *ExprValPiece,
+             SDNode *N, SDNode *N2, unsigned R, bool indir, DebugLoc dl,
+             unsigned O)
+      : Var(Var), Expr(Expr), ExprValPiece(ExprValPiece), DL(std::move(dl)), Order(O),
+        IsIndirect(indir) {
     kind = SDNODE;
     u.s.Node = N;
+    u.s.Node2 = N2;
     u.s.ResNo = R;
   }
 
   /// Constructor for constants.
-  SDDbgValue(DIVariable *Var, DIExpression *Expr, const Value *C, DebugLoc dl,
-             unsigned O)
-      : Var(Var), Expr(Expr), DL(std::move(dl)), Order(O), IsIndirect(false) {
+  SDDbgValue(DIVariable *Var, DIExpression *Expr, DIExpression *ExprValPiece, const Value *C,
+             DebugLoc dl, unsigned O)
+      : Var(Var), Expr(Expr), ExprValPiece(ExprValPiece), DL(std::move(dl)), Order(O), IsIndirect(false) {
     kind = CONST;
     u.Const = C;
   }
 
   /// Constructor for virtual registers and frame indices.
-  SDDbgValue(DIVariable *Var, DIExpression *Expr, unsigned VRegOrFrameIdx,
-             bool IsIndirect, DebugLoc DL, unsigned Order,
-             enum DbgValueKind Kind)
-      : Var(Var), Expr(Expr), DL(DL), Order(Order), IsIndirect(IsIndirect) {
+  SDDbgValue(DIVariable *Var, DIExpression *Expr, DIExpression *ExprValPiece,
+             unsigned VRegOrFrameIdx, unsigned VRegOrFrameIdx2, bool IsIndirect,
+             DebugLoc DL, unsigned Order, enum DbgValueKind Kind)
+      : Var(Var), Expr(Expr), ExprValPiece(ExprValPiece), DL(DL), Order(Order),
+        IsIndirect(IsIndirect) {
     assert((Kind == VREG || Kind == FRAMEIX) &&
            "Invalid SDDbgValue constructor");
     kind = Kind;
-    if (kind == VREG)
-      u.VReg = VRegOrFrameIdx;
-    else
+    if (kind == VREG) {
+      u.reg.VReg = VRegOrFrameIdx;
+      u.reg.VReg2 = VRegOrFrameIdx2;
+    } else
       u.FrameIx = VRegOrFrameIdx;
   }
 
@@ -95,8 +105,14 @@ public:
   /// Returns the DIExpression pointer for the expression.
   DIExpression *getExpression() const { return Expr; }
 
+  /// Returns the DIExpression pointer for the extra expression.
+  DIExpression *getExpressionValPiece() const { return ExprValPiece; }
+
   /// Returns the SDNode* for a register ref
   SDNode *getSDNode() const { assert (kind==SDNODE); return u.s.Node; }
+
+  /// Returns the SDNode* for an extra register ref
+  SDNode *getSDNode2() const { assert (kind==SDNODE); return u.s.Node2; }
 
   /// Returns the ResNo for a register ref
   unsigned getResNo() const { assert (kind==SDNODE); return u.s.ResNo; }
@@ -108,7 +124,10 @@ public:
   unsigned getFrameIx() const { assert (kind==FRAMEIX); return u.FrameIx; }
 
   /// Returns the Virtual Register for a VReg
-  unsigned getVReg() const { assert (kind==VREG); return u.VReg; }
+  unsigned getVReg() const { assert (kind==VREG); return u.reg.VReg; }
+
+  /// Returns the Virtual Register for a VReg
+  unsigned getVReg2() const { assert (kind==VREG); return u.reg.VReg2; }
 
   /// Returns whether this is an indirect value.
   bool isIndirect() const { return IsIndirect; }

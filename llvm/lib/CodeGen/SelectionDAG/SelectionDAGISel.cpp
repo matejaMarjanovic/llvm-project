@@ -567,6 +567,7 @@ bool SelectionDAGISel::runOnMachineFunction(MachineFunction &mf) {
     bool hasFI = MI->getOperand(0).isFI();
     Register Reg =
         hasFI ? TRI.getFrameRegister(*MF) : MI->getOperand(0).getReg();
+    Register Reg2 = MI->getOperand(4).getReg();
     if (Register::isPhysicalRegister(Reg))
       EntryMBB->insert(EntryMBB->begin(), MI);
     else {
@@ -581,7 +582,8 @@ bool SelectionDAGISel::runOnMachineFunction(MachineFunction &mf) {
     }
 
     // If Reg is live-in then update debug info to track its copy in a vreg.
-    DenseMap<unsigned, unsigned>::iterator LDI = LiveInMap.find(Reg);
+    DenseMap<unsigned, unsigned>::iterator
+      LDI = LiveInMap.find(Reg);
     if (LDI != LiveInMap.end()) {
       assert(!hasFI && "There's no handling of frame pointer updating here yet "
                        "- add if needed");
@@ -589,6 +591,7 @@ bool SelectionDAGISel::runOnMachineFunction(MachineFunction &mf) {
       MachineBasicBlock::iterator InsertPos = Def;
       const MDNode *Variable = MI->getDebugVariable();
       const MDNode *Expr = MI->getDebugExpression();
+      const MDNode *ExprValPiece = MI->getDebugExpressionValPiece();
       DebugLoc DL = MI->getDebugLoc();
       bool IsIndirect = MI->isIndirectDebugValue();
       if (IsIndirect)
@@ -598,7 +601,7 @@ bool SelectionDAGISel::runOnMachineFunction(MachineFunction &mf) {
              "Expected inlined-at fields to agree");
       // Def is never a terminator here, so it is ok to increment InsertPos.
       BuildMI(*EntryMBB, ++InsertPos, DL, TII->get(TargetOpcode::DBG_VALUE),
-              IsIndirect, LDI->second, Variable, Expr);
+              IsIndirect, LDI->second, Variable, Expr, Reg2, ExprValPiece);
 
       // If this vreg is directly copied into an exported register then
       // that COPY instructions also need DBG_VALUE, if it is the only
@@ -620,7 +623,8 @@ bool SelectionDAGISel::runOnMachineFunction(MachineFunction &mf) {
         // declared, rather than whatever is attached to CopyUseMI.
         MachineInstr *NewMI =
             BuildMI(*MF, DL, TII->get(TargetOpcode::DBG_VALUE), IsIndirect,
-                    CopyUseMI->getOperand(0).getReg(), Variable, Expr);
+                    CopyUseMI->getOperand(0).getReg(), Variable, Expr, Reg2,
+                    ExprValPiece);
         MachineBasicBlock::iterator Pos = CopyUseMI;
         EntryMBB->insertAfter(Pos, NewMI);
       }

@@ -491,7 +491,8 @@ public:
   /// For a given Value, attempt to create and record a SDDbgValue in the
   /// SelectionDAG.
   bool handleDebugValue(const Value *V, DILocalVariable *Var,
-                        DIExpression *Expr, DebugLoc CurDL,
+                        DIExpression *Expr, const Value *V2,
+                        DIExpression *ExprValPiece, DebugLoc CurDL,
                         DebugLoc InstDL, unsigned Order);
 
   /// Evict any dangling debug information, attempting to salvage it first.
@@ -781,7 +782,8 @@ private:
   /// instruction for it now. At the end of instruction selection, they will be
   /// inserted to the entry BB.
   bool EmitFuncArgumentDbgValue(const Value *V, DILocalVariable *Variable,
-                                DIExpression *Expr, DILocation *DL,
+                                DIExpression *Expr, const Value *V2,
+                                DIExpression *ExprValPiece, DILocation *DL,
                                 bool IsDbgDeclare, const SDValue &N);
 
   /// Return the next block after MBB, or nullptr if there is none.
@@ -793,7 +795,8 @@ private:
 
   /// Return the appropriate SDDbgValue based on N.
   SDDbgValue *getDbgValue(SDValue N, DILocalVariable *Variable,
-                          DIExpression *Expr, const DebugLoc &dl,
+                          DIExpression *Expr, SDNode* N2,
+                          DIExpression *ExprValPiece, const DebugLoc &dl,
                           unsigned DbgSDNodeOrder);
 
   /// Lowers CallInst to an external symbol.

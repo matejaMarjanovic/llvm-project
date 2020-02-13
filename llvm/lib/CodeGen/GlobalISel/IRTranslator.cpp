@@ -1387,12 +1387,19 @@ bool IRTranslator::translateKnownIntrinsic(const CallInst &CI, Intrinsic::ID ID,
     } else if (const auto *CI = dyn_cast<Constant>(V)) {
       MIRBuilder.buildConstDbgValue(*CI, DI.getVariable(), DI.getExpression());
     } else {
+      const Value *V2 = DI.getValue2();
       for (Register Reg : getOrCreateVRegs(*V)) {
         // FIXME: This does not handle register-indirect values at offset 0. The
         // direct/indirect thing shouldn't really be handled by something as
         // implicit as reg+noreg vs reg+imm in the first place, but it seems
         // pretty baked in right now.
-        MIRBuilder.buildDirectDbgValue(Reg, DI.getVariable(), DI.getExpression());
+        Register Reg2;
+        if (V2 == UndefValue::get(V2->getType()) || !V2)
+          Reg2 = Register();
+        else
+          Reg2 = getOrCreateVReg(*V2);
+        MIRBuilder.buildDirectDbgValue(Reg, DI.getVariable(), DI.getExpression(),
+                                       Reg2, DI.getExpressionValPiece());
       }
     }
     return true;

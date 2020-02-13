@@ -1303,23 +1303,26 @@ public:
                           const SDNodeFlags Flags = SDNodeFlags());
 
   /// Creates a SDDbgValue node.
-  SDDbgValue *getDbgValue(DIVariable *Var, DIExpression *Expr, SDNode *N,
+  SDDbgValue *getDbgValue(DIVariable *Var, DIExpression *Expr,
+                          DIExpression *ExprValPiece, SDNode *N, SDNode *N2,
                           unsigned R, bool IsIndirect, const DebugLoc &DL,
                           unsigned O);
 
   /// Creates a constant SDDbgValue node.
   SDDbgValue *getConstantDbgValue(DIVariable *Var, DIExpression *Expr,
-                                  const Value *C, const DebugLoc &DL,
-                                  unsigned O);
+                                  const Value *C, DIExpression *ExprValPiece,
+                                  const DebugLoc &DL, unsigned O);
 
   /// Creates a FrameIndex SDDbgValue node.
   SDDbgValue *getFrameIndexDbgValue(DIVariable *Var, DIExpression *Expr,
-                                    unsigned FI, bool IsIndirect,
-                                    const DebugLoc &DL, unsigned O);
+                                    unsigned FI, DIExpression *ExprValPiece,
+                                    bool IsIndirect, const DebugLoc &DL,
+                                    unsigned O);
 
   /// Creates a VReg SDDbgValue node.
   SDDbgValue *getVRegDbgValue(DIVariable *Var, DIExpression *Expr,
-                              unsigned VReg, bool IsIndirect,
+                              DIExpression *ExprValPiece, unsigned VReg,
+                              unsigned VReg2, bool IsIndirect,
                               const DebugLoc &DL, unsigned O);
 
   /// Creates a SDDbgLabel node.

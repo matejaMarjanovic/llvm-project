@@ -8028,45 +8028,51 @@ SDNode *SelectionDAG::getNodeIfExists(unsigned Opcode, SDVTList VTList,
 ///
 /// SDNode
 SDDbgValue *SelectionDAG::getDbgValue(DIVariable *Var, DIExpression *Expr,
-                                      SDNode *N, unsigned R, bool IsIndirect,
+                                      DIExpression *ExprValPiece, SDNode *N,
+                                      SDNode *N2, unsigned R, bool IsIndirect,
                                       const DebugLoc &DL, unsigned O) {
   assert(cast<DILocalVariable>(Var)->isValidLocationForIntrinsic(DL) &&
          "Expected inlined-at fields to agree");
   return new (DbgInfo->getAlloc())
-      SDDbgValue(Var, Expr, N, R, IsIndirect, DL, O);
+      SDDbgValue(Var, Expr, ExprValPiece, N, N2, R, IsIndirect, DL, O);
 }
 
 /// Constant
 SDDbgValue *SelectionDAG::getConstantDbgValue(DIVariable *Var,
                                               DIExpression *Expr,
                                               const Value *C,
+                                              DIExpression *ExprValPiece,
                                               const DebugLoc &DL, unsigned O) {
   assert(cast<DILocalVariable>(Var)->isValidLocationForIntrinsic(DL) &&
          "Expected inlined-at fields to agree");
-  return new (DbgInfo->getAlloc()) SDDbgValue(Var, Expr, C, DL, O);
+  return new (DbgInfo->getAlloc()) SDDbgValue(Var, Expr, ExprValPiece, C, DL, O);
 }
 
 /// FrameIndex
 SDDbgValue *SelectionDAG::getFrameIndexDbgValue(DIVariable *Var,
-                                                DIExpression *Expr, unsigned FI,
+                                                DIExpression *Expr,
+                                                unsigned FI,
+                                                DIExpression *ExprValPiece,
                                                 bool IsIndirect,
                                                 const DebugLoc &DL,
                                                 unsigned O) {
   assert(cast<DILocalVariable>(Var)->isValidLocationForIntrinsic(DL) &&
          "Expected inlined-at fields to agree");
   return new (DbgInfo->getAlloc())
-      SDDbgValue(Var, Expr, FI, IsIndirect, DL, O, SDDbgValue::FRAMEIX);
+      SDDbgValue(Var, Expr, ExprValPiece, FI, 0, IsIndirect,
+                 DL, O, SDDbgValue::FRAMEIX);
 }
 
 /// VReg
-SDDbgValue *SelectionDAG::getVRegDbgValue(DIVariable *Var,
-                                          DIExpression *Expr,
-                                          unsigned VReg, bool IsIndirect,
+SDDbgValue *SelectionDAG::getVRegDbgValue(DIVariable *Var, DIExpression *Expr,
+                                          DIExpression *ExprValPiece, unsigned VReg,
+                                          unsigned VReg2, bool IsIndirect,
                                           const DebugLoc &DL, unsigned O) {
   assert(cast<DILocalVariable>(Var)->isValidLocationForIntrinsic(DL) &&
          "Expected inlined-at fields to agree");
   return new (DbgInfo->getAlloc())
-      SDDbgValue(Var, Expr, VReg, IsIndirect, DL, O, SDDbgValue::VREG);
+      SDDbgValue(Var, Expr, ExprValPiece, VReg, VReg2, IsIndirect, DL,
+                 O, SDDbgValue::VREG);
 }
 
 void SelectionDAG::transferDbgValues(SDValue From, SDValue To,
@@ -8114,8 +8120,9 @@ void SelectionDAG::transferDbgValues(SDValue From, SDValue To,
     }
     // Clone the SDDbgValue and move it to To.
     SDDbgValue *Clone =
-        getDbgValue(Var, Expr, ToNode, To.getResNo(), Dbg->isIndirect(),
-                    Dbg->getDebugLoc(), Dbg->getOrder());
+        getDbgValue(Var, Expr, Dbg->getExpressionValPiece(), ToNode, nullptr,
+                    To.getResNo(), Dbg->isIndirect(), Dbg->getDebugLoc(),
+                    Dbg->getOrder());
     ClonedDVs.push_back(Clone);
 
     if (InvalidateDbg) {
@@ -8154,7 +8161,8 @@ void SelectionDAG::salvageDebugInfo(SDNode &N) {
         DIExpr =
             DIExpression::prepend(DIExpr, DIExpression::StackValue, Offset);
         SDDbgValue *Clone =
-            getDbgValue(DV->getVariable(), DIExpr, N0.getNode(), N0.getResNo(),
+            getDbgValue(DV->getVariable(), DIExpr, DV->getExpressionValPiece(),
+                        N0.getNode(), N1.getNode(), N0.getResNo(),
                         DV->isIndirect(), DV->getDebugLoc(), DV->getOrder());
         ClonedDVs.push_back(Clone);
         DV->setIsInvalidated();

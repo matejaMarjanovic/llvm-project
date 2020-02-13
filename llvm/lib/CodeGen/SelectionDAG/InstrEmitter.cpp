@@ -678,6 +678,11 @@ InstrEmitter::EmitDbgValue(SDDbgValue *SD,
                            DenseMap<SDValue, unsigned> &VRBaseMap) {
   MDNode *Var = SD->getVariable();
   const DIExpression *Expr = SD->getExpression();
+  const DIExpression *ExprValPiece =
+        SD->getExpressionValPiece() ?
+        SD->getExpressionValPiece() :
+        DIExpression::get(MF->getFunction().getContext(), {});
+  unsigned Reg2 = 0;
   DebugLoc DL = SD->getDebugLoc();
   assert(cast<DILocalVariable>(Var)->isValidLocationForIntrinsic(DL) &&
          "Expected inlined-at fields to agree");
@@ -693,6 +698,8 @@ InstrEmitter::EmitDbgValue(SDDbgValue *SD,
     MIB.addReg(0U, RegState::Debug);
     MIB.addMetadata(Var);
     MIB.addMetadata(Expr);
+    MIB.addReg(0U, RegState::Debug);
+    MIB.addMetadata(ExprValPiece);
     return &*MIB;
   }
 
@@ -706,7 +713,8 @@ InstrEmitter::EmitDbgValue(SDDbgValue *SD,
       Expr = DIExpression::append(Expr, {dwarf::DW_OP_deref});
 
     FrameMI.addReg(0);
-    return FrameMI.addMetadata(Var).addMetadata(Expr);
+    return FrameMI.addMetadata(Var).addMetadata(Expr)
+                  .addReg(0).addMetadata(ExprValPiece);
   }
   // Otherwise, we're going to create an instruction here.
   const MCInstrDesc &II = TII->get(TargetOpcode::DBG_VALUE);
@@ -727,6 +735,7 @@ InstrEmitter::EmitDbgValue(SDDbgValue *SD,
                  /*IsDebug=*/true, /*IsClone=*/false, /*IsCloned=*/false);
   } else if (SD->getKind() == SDDbgValue::VREG) {
     MIB.addReg(SD->getVReg(), RegState::Debug);
+    Reg2 = SD->getVReg2();
   } else if (SD->getKind() == SDDbgValue::CONST) {
     const Value *V = SD->getConst();
     if (const ConstantInt *CI = dyn_cast<ConstantInt>(V)) {
@@ -757,6 +766,8 @@ InstrEmitter::EmitDbgValue(SDDbgValue *SD,
 
   MIB.addMetadata(Var);
   MIB.addMetadata(Expr);
+  MIB.addReg(Reg2, RegState::Debug);
+  MIB.addMetadata(ExprValPiece);
 
   return &*MIB;
 }
