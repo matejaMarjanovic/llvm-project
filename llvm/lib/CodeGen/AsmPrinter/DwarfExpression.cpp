@@ -99,6 +99,7 @@ void DwarfExpression::addAnd(unsigned Mask) {
 
 bool DwarfExpression::addMachineReg(const TargetRegisterInfo &TRI,
                                     unsigned MachineReg, unsigned MaxSize) {
+  int Reg = TRI.getDwarfRegNum(MachineReg, false);
   if (!llvm::Register::isPhysicalRegister(MachineReg)) {
     if (isFrameRegister(TRI, MachineReg)) {
       DwarfRegs.push_back({-1, 0, nullptr});
@@ -107,7 +108,6 @@ bool DwarfExpression::addMachineReg(const TargetRegisterInfo &TRI,
     return false;
   }
 
-  int Reg = TRI.getDwarfRegNum(MachineReg, false);
 
   // If this is a valid register number, emit it.
   if (Reg >= 0) {
@@ -483,18 +483,238 @@ void DwarfExpression::addExpression(DIExpressionCursor &&ExprCursor,
       }
       break;
     }
-    case dwarf::DW_OP_LLVM_reg_plus:
-    case dwarf::DW_OP_LLVM_reg_minus:
-    case dwarf::DW_OP_LLVM_reg_mul:
-    case dwarf::DW_OP_LLVM_reg_div:
-    case dwarf::DW_OP_LLVM_reg_or:
-    case dwarf::DW_OP_LLVM_reg_and:
-    case dwarf::DW_OP_LLVM_reg_xor:
-    case dwarf::DW_OP_LLVM_reg_shl:
-    case dwarf::DW_OP_LLVM_reg_shr:
-    case dwarf::DW_OP_LLVM_reg_shra:
-    // TODO: Handle this.
+    case dwarf::DW_OP_LLVM_reg_plus: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      if (LocValPiece.getReg()) {
+        unsigned RegOffset = 0;
+        if (dwarfReg < 0) {
+          for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+            dwarfReg = TRI.getDwarfRegNum(*SR, false);
+            if (dwarfReg >= 0) {
+              unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+              unsigned Size = TRI.getSubRegIdxSize(Idx);
+              RegOffset = TRI.getSubRegIdxOffset(Idx);
+              setSubRegisterPiece(Size, RegOffset);
+            }
+          }
+        }
+        if (dwarfReg >= 0) {
+          DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+          addExpression(std::move(ExprCursorValPiece));
+          addBReg(dwarfReg, RegOffset);
+          emitOp(dwarf::DW_OP_plus);
+        }
+      }
       break;
+    }
+    case dwarf::DW_OP_LLVM_reg_minus: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_minus);
+      }
+      break;
+    }
+    case dwarf::DW_OP_LLVM_reg_mul: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_mul);
+      }
+      break;
+    }
+    case dwarf::DW_OP_LLVM_reg_div: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_div);
+      }
+      break;
+    }
+    case dwarf::DW_OP_LLVM_reg_or: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_or);
+      }
+      break;
+    }
+    case dwarf::DW_OP_LLVM_reg_and: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_and);
+      }
+      break;
+    }
+    case dwarf::DW_OP_LLVM_reg_xor: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_xor);
+      }
+      break;
+    }
+    case dwarf::DW_OP_LLVM_reg_shl: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_shl);
+      }
+      break;
+    }
+    case dwarf::DW_OP_LLVM_reg_shr: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_shr);
+      }
+      break;
+    }
+    case dwarf::DW_OP_LLVM_reg_shra: {
+      const TargetRegisterInfo &TRI = *CU.getAsmPrinter()->MF->getSubtarget().getRegisterInfo();
+      int dwarfReg = TRI.getDwarfRegNum(LocValPiece.getReg(), false);
+      unsigned RegOffset = 0;
+      if (dwarfReg < 0) {
+        for (MCSuperRegIterator SR(LocValPiece.getReg(), &TRI); SR.isValid(); ++SR) {
+          dwarfReg = TRI.getDwarfRegNum(*SR, false);
+          if (dwarfReg >= 0) {
+            unsigned Idx = TRI.getSubRegIndex(*SR, LocValPiece.getReg());
+            unsigned Size = TRI.getSubRegIdxSize(Idx);
+            RegOffset = TRI.getSubRegIdxOffset(Idx);
+            setSubRegisterPiece(Size, RegOffset);
+          }
+        }
+      }
+      if (dwarfReg >= 0) {
+        addBReg(dwarfReg, RegOffset);
+        DIExpressionCursor ExprCursorValPiece(DIExprValPiece);
+        addExpression(std::move(ExprCursorValPiece));
+        emitOp(dwarf::DW_OP_shra);
+      }
+      break;
+    }
     case dwarf::DW_OP_stack_value:
       LocationKind = Implicit;
       break;

@@ -25,6 +25,9 @@ class DbgValueLoc {
   /// Any complex address location expression for this DbgValueLoc.
   const DIExpression *Expression;
 
+  /// Any complex extra address location expression for this DbgValueLoc.
+  const DIExpression *ExpressionValPiece;
+
   /// Type of entry that this represents.
   enum EntryType { E_Location, E_Integer, E_ConstantFP, E_ConstantInt };
   enum EntryType EntryKind;
@@ -38,6 +41,7 @@ class DbgValueLoc {
 
   /// Or a location in the machine frame.
   MachineLocation Loc;
+  MachineLocation LocValPiece;
 
 public:
   DbgValueLoc(const DIExpression *Expr, int64_t i)
@@ -52,8 +56,10 @@ public:
       : Expression(Expr), EntryKind(E_ConstantInt) {
     Constant.CIP = CIP;
   }
-  DbgValueLoc(const DIExpression *Expr, MachineLocation Loc)
-      : Expression(Expr), EntryKind(E_Location), Loc(Loc) {
+  DbgValueLoc(const DIExpression *Expr, const DIExpression *ExprValPiece,
+              MachineLocation Loc, MachineLocation LocValPiece)
+      : Expression(Expr), ExpressionValPiece(ExprValPiece)
+      , EntryKind(E_Location), Loc(Loc), LocValPiece(LocValPiece) {
     assert(cast<DIExpression>(Expr)->isValid());
   }
 
@@ -65,9 +71,11 @@ public:
   const ConstantFP *getConstantFP() const { return Constant.CFP; }
   const ConstantInt *getConstantInt() const { return Constant.CIP; }
   MachineLocation getLoc() const { return Loc; }
+  MachineLocation getLocValPiece() const { return LocValPiece; }
   bool isFragment() const { return getExpression()->isFragment(); }
   bool isEntryVal() const { return getExpression()->isEntryValue(); }
   const DIExpression *getExpression() const { return Expression; }
+  const DIExpression *getExpressionValPiece() const { return ExpressionValPiece; }
   friend bool operator==(const DbgValueLoc &, const DbgValueLoc &);
   friend bool operator<(const DbgValueLoc &, const DbgValueLoc &);
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -83,6 +91,9 @@ public:
       Constant.CFP->dump();
     if (Expression)
       Expression->dump();
+    llvm::dbgs() << "LocValPiece = { reg = " << LocValPiece.getReg() << "}\n";
+    if (ExpressionValPiece)
+      ExpressionValPiece->dump();
   }
 #endif
 };

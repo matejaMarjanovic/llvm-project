@@ -231,7 +231,7 @@ const DIType *DbgVariable::getType() const {
 /// Get .debug_loc entry for the instruction range starting at MI.
 static DbgValueLoc getDebugLocValue(const MachineInstr *MI) {
   const DIExpression *Expr = MI->getDebugExpression();
-  assert(MI->getNumOperands() == 4);
+  assert(MI->getNumOperands() == 6);
   if (MI->getOperand(0).isReg()) {
     auto RegOp = MI->getOperand(0);
     auto Op1 = MI->getOperand(1);
@@ -239,7 +239,17 @@ static DbgValueLoc getDebugLocValue(const MachineInstr *MI) {
     // register-indirect address.
     assert((!Op1.isImm() || (Op1.getImm() == 0)) && "unexpected offset");
     MachineLocation MLoc(RegOp.getReg(), Op1.isImm());
-    return DbgValueLoc(Expr, MLoc);
+    const DIExpression *ExprValPiece;
+    if (!MI->getOperand(4).isReg()) {
+      MachineLocation MLocValPiece(0);
+      ExprValPiece = MI->getDebugExpressionValPiece();
+      return DbgValueLoc(Expr, ExprValPiece, MLoc, MLocValPiece);
+    } else {
+      auto RegOp2 = MI->getOperand(4);
+      MachineLocation MLocValPiece(RegOp2.getReg());
+      ExprValPiece = MI->getDebugExpressionValPiece();
+      return DbgValueLoc(Expr, ExprValPiece, MLoc, MLocValPiece);
+    }
   }
   if (MI->getOperand(0).isImm())
     return DbgValueLoc(Expr, MI->getOperand(0).getImm());
@@ -248,7 +258,7 @@ static DbgValueLoc getDebugLocValue(const MachineInstr *MI) {
   if (MI->getOperand(0).isCImm())
     return DbgValueLoc(Expr, MI->getOperand(0).getCImm());
 
-  llvm_unreachable("Unexpected 4-operand DBG_VALUE instruction!");
+  llvm_unreachable("Unexpected 6-operand DBG_VALUE instruction!");
 }
 
 void DbgVariable::initializeDbgValue(const MachineInstr *DbgValue) {
@@ -660,9 +670,11 @@ static void collectCallSiteParameters(const MachineInstr *CallMI,
         Register FP = TRI->getFrameRegister(*MF);
         bool IsSPorFP = (RegLoc == SP) || (RegLoc == FP);
         if (TRI->isCalleeSavedPhysReg(RegLoc, *MF) || IsSPorFP) {
-          DbgValueLoc DbgLocVal(ParamValue->second,
-                                MachineLocation(RegLoc,
-                                                /*IsIndirect=*/IsSPorFP));
+          DbgValueLoc
+            DbgLocVal(ParamValue->second,
+                      DIExpression::get(MF->getFunction().getContext(), {}),
+                      MachineLocation(RegLoc, /*IsIndirect=*/IsSPorFP),
+                      MachineLocation(0));
           finishCallSiteParam(DbgLocVal, ParamFwdReg);
         // TODO: Add support for entry value plus an expression.
         } else if (ShouldTryEmitEntryVals &&
@@ -685,7 +697,10 @@ static void collectCallSiteParameters(const MachineInstr *CallMI,
         if (EntryValReg != RegsForEntryValues.end())
           FwdReg = EntryValReg->second;
 
-      DbgValueLoc DbgLocVal(EntryExpr, MachineLocation(RegEntry));
+      DbgValueLoc
+        DbgLocVal(EntryExpr,
+                  DIExpression::get(MF->getFunction().getContext(), {}),
+                  MachineLocation(RegEntry), MachineLocation(0));
       DbgCallSiteParam CSParm(FwdReg, DbgLocVal);
       Params.push_back(CSParm);
       ++NumCSParams;
@@ -2212,6 +2227,7 @@ void DwarfDebug::emitDebugLocValue(const AsmPrinter &AP, const DIBasicType *BT,
                                    const DbgValueLoc &Value,
                                    DwarfExpression &DwarfExpr) {
   auto *DIExpr = Value.getExpression();
+  const auto *DIExprValPiece = Value.getExpressionValPiece();
   DIExpressionCursor ExprCursor(DIExpr);
   DwarfExpr.addFragmentOffset(DIExpr);
   // Regular entry.
@@ -2235,11 +2251,15 @@ void DwarfDebug::emitDebugLocValue(const AsmPrinter &AP, const DIBasicType *BT,
     const TargetRegisterInfo &TRI = *AP.MF->getSubtarget().getRegisterInfo();
     if (!DwarfExpr.addMachineRegExpression(TRI, Cursor, Location.getReg()))
       return;
+    DwarfExpr.setLocValPiece(Value.getLocValPiece());
+    DwarfExpr.setExpressionValPiece(DIExprValPiece);
     return DwarfExpr.addExpression(std::move(Cursor));
   } else if (Value.isConstantFP()) {
     APInt RawBytes = Value.getConstantFP()->getValueAPF().bitcastToAPInt();
     DwarfExpr.addUnsignedConstant(RawBytes);
   }
+  DwarfExpr.setExpressionValPiece(DIExprValPiece);
+  DwarfExpr.setLocValPiece(Value.getLocValPiece());
   DwarfExpr.addExpression(std::move(ExprCursor));
 }
 

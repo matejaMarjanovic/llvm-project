@@ -19,6 +19,7 @@
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/IR/DebugInfoMetadata.h"
+#include "llvm/MC/MachineLocation.h"
 #include <cassert>
 #include <cstdint>
 #include <iterator>
@@ -30,6 +31,8 @@ class APInt;
 class DwarfCompileUnit;
 class DIELoc;
 class TargetRegisterInfo;
+class Register;
+class MachineLocation;
 
 /// Holds a DIExpression and keeps track of how many operands have been consumed
 /// so far.
@@ -135,6 +138,9 @@ protected:
   unsigned LocationKind : 3;
   unsigned LocationFlags : 2;
   unsigned DwarfVersion : 4;
+
+  MachineLocation LocValPiece;
+  const DIExpression *DIExprValPiece;
 
 public:
   bool isUnknownLocation() const {
@@ -273,7 +279,7 @@ public:
   DwarfExpression(unsigned DwarfVersion, DwarfCompileUnit &CU)
       : CU(CU), SubRegisterSizeInBits(0), SubRegisterOffsetInBits(0),
         LocationKind(Unknown), LocationFlags(Unknown),
-        DwarfVersion(DwarfVersion) {}
+        DwarfVersion(DwarfVersion), LocValPiece(MachineLocation(0)) {}
 
   /// This needs to be called last to commit any pending changes.
   void finalize();
@@ -286,6 +292,10 @@ public:
 
   /// Emit an unsigned constant.
   void addUnsignedConstant(const APInt &Value);
+
+  void setExpressionValPiece(const DIExpression *Expr) {
+    DIExprValPiece = Expr;
+  }
 
   /// Lock this down to become a memory location description.
   void setMemoryLocationKind() {
@@ -301,6 +311,11 @@ public:
   /// Lock this down to become a call site parameter location.
   void setCallSiteParamValueFlag() {
     LocationFlags |= CallSiteParamValue;
+  }
+
+  void setLocValPiece(const MachineLocation &Other) {
+    LocValPiece.setIsRegister(Other.isReg());
+    LocValPiece.setRegister(Other.getReg());
   }
 
   /// Emit a machine register location. As an optimization this may also consume
