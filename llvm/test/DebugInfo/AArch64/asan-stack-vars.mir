@@ -449,8 +449,8 @@ body:             |
     renamable $x8 = ADDXrs killed renamable $x8, renamable $x11, 0, debug-location !35
     $w16 = MOVZWi 243, 0, debug-location !35
     STRBBui killed renamable $w16, killed renamable $x8, 11, debug-location !35 :: (store 1 into %ir.19)
-    DBG_VALUE renamable $x13, 0, !36, !DIExpression(DW_OP_deref), debug-location !37
-    DBG_VALUE renamable $x14, 0, !38, !DIExpression(DW_OP_deref), debug-location !44
+    DBG_VALUE renamable $x13, 0, !36, !DIExpression(DW_OP_deref), $noreg, !DIExpression(), debug-location !37
+    DBG_VALUE renamable $x14, 0, !38, !DIExpression(DW_OP_deref), $noreg, !DIExpression(), debug-location !44
     $x8 = ORRXrs $xzr, $x13, 0
     renamable $x15 = UBFMXri renamable $x8, 3, 63
     renamable $w16 = LDRHHroX killed renamable $x15, renamable $x11, 0, 0 :: (load 2 from %ir.24)
@@ -460,9 +460,9 @@ body:             |
     STRDui killed $d0, $sp, 19 :: (store 8 into %stack.6)
     STRXui killed $x0, $sp, 18 :: (store 8 into %stack.7)
     STRXui killed $x13, $sp, 17 :: (store 8 into %stack.8)
-    DBG_VALUE $sp, 0, !36, !DIExpression(DW_OP_plus_uconst, 136, DW_OP_deref, DW_OP_deref), debug-location !37
+    DBG_VALUE $sp, 0, !36, !DIExpression(DW_OP_plus_uconst, 136, DW_OP_deref, DW_OP_deref), $noreg, !DIExpression(), debug-location !37
     STRXui killed $x14, $sp, 16 :: (store 8 into %stack.9)
-    DBG_VALUE $sp, 0, !38, !DIExpression(DW_OP_plus_uconst, 128, DW_OP_deref, DW_OP_deref), debug-location !44
+    DBG_VALUE $sp, 0, !38, !DIExpression(DW_OP_plus_uconst, 128, DW_OP_deref, DW_OP_deref), $noreg, !DIExpression(), debug-location !44
     STRXui killed $x10, $sp, 15 :: (store 8 into %stack.10)
     STRXui killed $x12, $sp, 14 :: (store 8 into %stack.11)
     STRXui killed $x11, $sp, 13 :: (store 8 into %stack.12)

@@ -7,7 +7,7 @@ entry:
   %0 = call i64 @llvm.ctpop.i64(i64 0), !dbg !14
   %1 = inttoptr i64 %0 to i32*, !dbg !14
   call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !11, metadata !13), !dbg !14
-; CHECK: call void @llvm.dbg.value(metadata i64 0, metadata !11, metadata !DIExpression()), !dbg !13
+; CHECK: call void @llvm.dbg.value(metadata i64 0, metadata !11, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !13
   %call = call i32* (...) @baa(), !dbg !15
   %2 = ptrtoint i32* %call to i64, !dbg !16
   %3 = inttoptr i64 %2 to i32*, !dbg !16

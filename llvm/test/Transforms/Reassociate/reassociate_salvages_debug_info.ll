@@ -4,7 +4,7 @@
 
 define hidden i32 @main(i32 %argc, i8** %argv) {
 entry:
-  ; CHECK: call void @llvm.dbg.value(metadata i32 %argc, metadata [[VAR_B:![0-9]+]], metadata !DIExpression(DW_OP_plus_uconst, 1, DW_OP_stack_value))
+  ; CHECK: call void @llvm.dbg.value(metadata i32 %argc, metadata [[VAR_B:![0-9]+]], metadata !DIExpression(DW_OP_plus_uconst, 1, DW_OP_stack_value), metadata undef, metadata !DIExpression())
   %add = add nsw i32 %argc, 1, !dbg !26
   call void @llvm.dbg.value(metadata i32 %add, metadata !22, metadata !DIExpression()), !dbg !25
   %add1 = add nsw i32 %argc, %add, !dbg !27

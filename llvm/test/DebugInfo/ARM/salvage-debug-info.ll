@@ -31,7 +31,7 @@ entry:
 if.then:                                          ; preds = %entry
   %1 = inttoptr i32 %0 to %struct.info*, !dbg !27
   tail call void @llvm.dbg.value(metadata %struct.info* %1, metadata !22, metadata !DIExpression()), !dbg !28
-  ; CHECK: call void @llvm.dbg.value(metadata i32 %0, metadata !22, metadata !DIExpression())
+  ; CHECK: call void @llvm.dbg.value(metadata i32 %0, metadata !22, metadata !DIExpression(), metadata undef, metadata !DIExpression())
   tail call void @llvm.dbg.value(metadata i32 0, metadata !20, metadata !DIExpression()), !dbg !29
   %2 = load i32, i32* @n, align 4, !dbg !30
   %cmp5 = icmp eq i32 %2, 0, !dbg !33

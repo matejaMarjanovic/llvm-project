@@ -3,7 +3,7 @@
 ; The DW_OP_LLVM_entry_value operation can only be used in MIR.
 
 ; CHECK: Entry values are only allowed in MIR
-; CHECK: call void @llvm.dbg.value(metadata i32 %param, metadata !{{.*}}, metadata !DIExpression(DW_OP_LLVM_entry_value, 1))
+; CHECK: call void @llvm.dbg.value(metadata i32 %param, metadata !{{.*}}, metadata !DIExpression(DW_OP_LLVM_entry_value, 1), metadata undef, metadata !DIExpression())
 ; CHECK: warning: ignoring invalid debug info
 
 define void @foo(i32 %param) !dbg !4 {

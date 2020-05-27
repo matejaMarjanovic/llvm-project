@@ -72,9 +72,9 @@ body:             |
   bb.0.entry:
     $sp = frame-setup STMDB_UPD $sp, 14, $noreg, killed $r4, killed $lr
     $r4 = MOVr $r0, 14, $noreg, $noreg
-    DBG_VALUE $r1, $noreg, !17, !DIExpression(DW_OP_LLVM_fragment, 32, 32), debug-location !18
-    DBG_VALUE $noreg, $noreg, !17, !DIExpression(DW_OP_LLVM_fragment, 64, 32), debug-location !18
-    DBG_VALUE $r4, $noreg, !17, !DIExpression(DW_OP_LLVM_fragment, 0, 32), debug-location !18
+    DBG_VALUE $r1, $noreg, !17, !DIExpression(DW_OP_LLVM_fragment, 32, 32), $noreg, !DIExpression(), debug-location !18
+    DBG_VALUE $noreg, $noreg, !17, !DIExpression(DW_OP_LLVM_fragment, 64, 32), $noreg, !DIExpression(), debug-location !18
+    DBG_VALUE $r4, $noreg, !17, !DIExpression(DW_OP_LLVM_fragment, 0, 32), $noreg, !DIExpression(), debug-location !18
     $r0 = MOVr killed $r1, 14, $noreg, $noreg, debug-location !19
     BL @fn2, csr_aapcs, implicit-def dead $lr, implicit $sp, implicit $r0, implicit-def $sp, implicit-def $r0, debug-location !19
     renamable $r1 = MOVi 0, 14, $noreg, $noreg

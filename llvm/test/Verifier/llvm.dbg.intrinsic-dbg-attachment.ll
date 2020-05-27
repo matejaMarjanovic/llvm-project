@@ -25,7 +25,7 @@ entry:
       metadata !DIExpression()),
     !dbg !DILocation(scope: !2)
 ; CHECK-LABEL: mismatched subprogram between llvm.dbg.value variable and !dbg attachment
-; CHECK-NEXT: call void @llvm.dbg.value({{[^,]+}}, metadata ![[VAR:[0-9]+]], {{[^,]+}}), !dbg ![[LOC:[0-9]+]]
+; CHECK-NEXT: call void @llvm.dbg.value({{[^,]+}}, metadata ![[VAR:[0-9]+]], {{[^,]+}}, metadata undef, metadata !DIExpression()), !dbg ![[LOC:[0-9]+]]
 ; CHECK-NEXT: label %entry
 ; CHECK-NEXT: void ()* @foo
 ; CHECK-NEXT: ![[VAR]] = !DILocalVariable({{.*}}scope: ![[VARSP:[0-9]+]]

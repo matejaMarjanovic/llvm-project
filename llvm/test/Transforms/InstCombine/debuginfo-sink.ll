@@ -10,7 +10,7 @@ declare void @llvm.dbg.value(metadata, metadata, metadata)
 ;
 ; CHECK-LABEL: define i32 @foo(i32*
 ; CHECK:       call void @llvm.dbg.value(metadata i32* %a, metadata !{{[0-9]+}},
-; CHECK-SAME:  metadata !DIExpression(DW_OP_plus_uconst, 4, DW_OP_stack_value))
+; CHECK-SAME:  metadata !DIExpression(DW_OP_plus_uconst, 4, DW_OP_stack_value), metadata undef, metadata !DIExpression())
 ; CHECK-NEXT:  br label %sink1
 
 define i32 @foo(i32 *%a) !dbg !7 {
@@ -22,7 +22,7 @@ entry:
 sink1:
 ; CHECK-LABEL: sink1:
 ; CHECK:       call void @llvm.dbg.value(metadata i32* %gep,
-; CHECK-SAME:                    metadata !{{[0-9]+}}, metadata !DIExpression())
+; CHECK-SAME:                    metadata !{{[0-9]+}}, metadata !DIExpression(), metadata undef, metadata !DIExpression())
 ; CHECK-NEXT:  load
   %0 = load i32, i32* %gep, align 4, !dbg !15
   ret i32 %0, !dbg !15
@@ -45,7 +45,7 @@ entry:
 sink2:
 ; CHECK-LABEL: sink2:
 ; CHECK:       call void @llvm.dbg.value(metadata i32* %gep,
-; CHECK-SAME:                    metadata !{{[0-9]+}}, metadata !DIExpression())
+; CHECK-SAME:                    metadata !{{[0-9]+}}, metadata !DIExpression(), metadata undef, metadata !DIExpression())
 ; CHECK-NEXT:  load
 ; CHECK-NEXT:  ret
   %0 = load i32, i32* %gep

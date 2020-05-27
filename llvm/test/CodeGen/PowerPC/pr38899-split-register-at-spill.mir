@@ -52,7 +52,7 @@ body:             |
     liveins: $x3, $x4
 
     %4:gprc = nsw MULLW $r4, $r3, debug-location !18
-    DBG_VALUE %4, $noreg, !15, !DIExpression(), debug-location !19
+    DBG_VALUE %4, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !19
     INLINEASM &"", 1, 12, implicit-def dead early-clobber $r0, 12, implicit-def early-clobber $r1, 12, implicit-def early-clobber $r2, 12, implicit-def dead early-clobber $r3, 12, implicit-def dead early-clobber $r4, 12, implicit-def dead early-clobber $r5, 12, implicit-def dead early-clobber $r6, 12, implicit-def dead early-clobber $r7, 12, implicit-def dead early-clobber $r8, 12, implicit-def dead early-clobber $r9, 12, implicit-def dead early-clobber $r10, 12, implicit-def dead early-clobber $r11, 12, implicit-def dead early-clobber $r12, 12, implicit-def early-clobber $r13, 12, implicit-def dead early-clobber $r14, 12, implicit-def dead early-clobber $r15, 12, implicit-def dead early-clobber $r16, 12, implicit-def dead early-clobber $r17, 12, implicit-def dead early-clobber $r18, 12, implicit-def dead early-clobber $r19, 12, implicit-def dead early-clobber $r20, 12, implicit-def dead early-clobber $r21, 12, implicit-def dead early-clobber $r22, 12, implicit-def dead early-clobber $r23, 12, implicit-def dead early-clobber $r24, 12, implicit-def dead early-clobber $r25, 12, implicit-def dead early-clobber $r26, 12, implicit-def dead early-clobber $r27, 12, implicit-def dead early-clobber $r28, 12, implicit-def dead early-clobber $r29, 12, implicit-def dead early-clobber $r30, 12, implicit-def early-clobber $r31, !25, debug-location !20
     %5:g8rc = EXTSW_32_64 %4, debug-location !26
     $x3 = COPY %5, debug-location !26

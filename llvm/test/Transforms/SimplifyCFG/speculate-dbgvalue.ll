@@ -18,14 +18,14 @@
 define i32 @test1(i32 %getdirt, i32 %dirt) #0 !dbg !7 {
 ; CHECK-LABEL: @test1(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[GETDIRT:%.*]], metadata !12, metadata !DIExpression()), !dbg !15
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[DIRT:%.*]], metadata !13, metadata !DIExpression()), !dbg !16
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 100, metadata !14, metadata !DIExpression()), !dbg !17
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[GETDIRT:%.*]], metadata !12, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !15
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[DIRT:%.*]], metadata !13, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !16
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 100, metadata !14, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !17
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i32 [[GETDIRT]], 0, !dbg !18
 ; *** We used to get an incorrect "call void @llvm.dbg.value(metadata i32 [[DIRT]], metadata !14, metadata !DIExpression()), !dbg !17" here, before the select. ***
 ; CHECK-NOT:     call void @llvm.dbg.value(metadata i32 [[DIRT]], metadata !14
 ; CHECK-NEXT:    [[RESULT:%.*]] = select i1 [[CMP]], i32 [[DIRT]], i32 100, !dbg !20
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[RESULT]], metadata !14, metadata !DIExpression()), !dbg !17
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[RESULT]], metadata !14, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !17
 ; CHECK-NEXT:    ret i32 [[RESULT]], !dbg !21
 ; CHECK: !12 = !DILocalVariable(name: "getdirt"
 ; CHECK: !13 = !DILocalVariable(name: "dirt"

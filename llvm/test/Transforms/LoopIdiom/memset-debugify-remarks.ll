@@ -18,7 +18,7 @@ define void @_Z15my_basic_memsetPcS_c(i8* %ptr, i8* %end, i8 %value) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[PTR1:%.*]] = ptrtoint i8* [[PTR:%.*]] to i64
 ; CHECK-NEXT:    [[CMP3:%.*]] = icmp eq i8* [[PTR]], [[END:%.*]], !dbg !15
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i1 [[CMP3]], metadata !9, metadata !DIExpression()), !dbg !15
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i1 [[CMP3]], metadata !9, metadata !DIExpression(), metadata i1 undef, metadata !DIExpression()), !dbg !15
 ; CHECK-NEXT:    br i1 [[CMP3]], label [[FOR_END:%.*]], label [[FOR_BODY_PREHEADER:%.*]], !dbg !16
 ; CHECK:       for.body.preheader:
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 0, [[PTR1]], !dbg !17
@@ -28,11 +28,11 @@ define void @_Z15my_basic_memsetPcS_c(i8* %ptr, i8* %end, i8 %value) {
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]], !dbg !17
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[PTR_ADDR_04:%.*]] = phi i8* [ [[INCDEC_PTR:%.*]], [[FOR_BODY]] ], [ [[PTR]], [[FOR_BODY_PREHEADER]] ], !dbg !19
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i8* [[PTR_ADDR_04]], metadata !11, metadata !DIExpression()), !dbg !19
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i8* [[PTR_ADDR_04]], metadata !11, metadata !DIExpression(), metadata i8* undef, metadata !DIExpression()), !dbg !19
 ; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, i8* [[PTR_ADDR_04]], i64 1, !dbg !20
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i8* [[INCDEC_PTR]], metadata !13, metadata !DIExpression()), !dbg !20
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i8* [[INCDEC_PTR]], metadata !13, metadata !DIExpression(), metadata i8* undef, metadata !DIExpression()), !dbg !20
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp eq i8* [[INCDEC_PTR]], [[END]], !dbg !21
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i1 [[CMP]], metadata !14, metadata !DIExpression()), !dbg !21
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i1 [[CMP]], metadata !14, metadata !DIExpression(), metadata i1 undef, metadata !DIExpression()), !dbg !21
 ; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_END_LOOPEXIT:%.*]], label [[FOR_BODY]], !dbg !17
 ; CHECK:       for.end.loopexit:
 ; CHECK-NEXT:    br label [[FOR_END]], !dbg !22

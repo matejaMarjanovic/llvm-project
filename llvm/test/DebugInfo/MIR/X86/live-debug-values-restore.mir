@@ -279,8 +279,8 @@ body:             |
     successors: %bb.2(0x30000000), %bb.1(0x50000000)
     liveins: $rdi, $rbx, $r12, $r13, $r14, $r15, $rbp
   
-    DBG_VALUE $rdi, $noreg, !13, !DIExpression(), debug-location !14
-    DBG_VALUE $rdi, $noreg, !13, !DIExpression(), debug-location !14
+    DBG_VALUE $rdi, $noreg, !13, !DIExpression(), $noreg, !DIExpression(), debug-location !14
+    DBG_VALUE $rdi, $noreg, !13, !DIExpression(), $noreg, !DIExpression(), debug-location !14
     TEST64rr renamable $rdi, renamable $rdi, implicit-def $eflags, debug-location !15
     JCC_1 %bb.2, 4, implicit $eflags, debug-location !17
   
@@ -336,7 +336,7 @@ body:             |
 # created at all, and the last block describes both variable fragments.
 
 # CHECK-LABEL: name: g
-# CHECK-NOT: !DIExpression()
+# CHECK-NOT: !DIExpression(), $noreg
 # CHECK-LABEL: bb.2.if.end:
 # CHECK:       DBG_VALUE $rdi, $noreg, ![[QVAR]], !DIExpression(DW_OP_LLVM_fragment, 0, 32)
 # CHECK-NEXT:  DBG_VALUE $rbx, $noreg, ![[QVAR]], !DIExpression(DW_OP_LLVM_fragment, 32, 32)
@@ -381,7 +381,7 @@ body:             |
     successors: %bb.1(0x50000000)
     liveins: $rdi, $rbx, $r12, $r13, $r14, $r15, $rbp
   
-    DBG_VALUE $rdi, $noreg, !113, !DIExpression(DW_OP_LLVM_fragment, 0, 32), debug-location !114
+    DBG_VALUE $rdi, $noreg, !113, !DIExpression(DW_OP_LLVM_fragment, 0, 32), $noreg, !DIExpression(), debug-location !114
     TEST64rr renamable $rdi, renamable $rdi, implicit-def $eflags, debug-location !115
     JMP_1 %bb.1, implicit $eflags, debug-location !117
   
@@ -395,7 +395,7 @@ body:             |
   bb.2.if.end:
     liveins: $rdi, $rbx, $r12, $r13, $r14, $r15, $rbp
   
-    DBG_VALUE $rbx, $noreg, !113, !DIExpression(DW_OP_LLVM_fragment, 32, 32), debug-location !114
+    DBG_VALUE $rbx, $noreg, !113, !DIExpression(DW_OP_LLVM_fragment, 32, 32), $noreg, !DIExpression(), debug-location !114
     MOV64mr $rsp, 1, $noreg, -8, $noreg, killed renamable $rbx :: (store 8 into %stack.0)
     renamable $rsi = MOV64rm $rsp, 1, $noreg, -8, $noreg :: (load 8 from %stack.0)
 
@@ -461,7 +461,7 @@ body:             |
     successors: %bb.2(0x30000000), %bb.1(0x50000000)
     liveins: $rdi, $rbx, $r12, $r13, $r14, $r15, $rbp
   
-    DBG_VALUE $rdi, $noreg, !213, !DIExpression(DW_OP_plus_uconst, 1), debug-location !214
+    DBG_VALUE $rdi, $noreg, !213, !DIExpression(DW_OP_plus_uconst, 1), $noreg, !DIExpression(), debug-location !214
     TEST64rr renamable $rdi, renamable $rdi, implicit-def $eflags, debug-location !215
     JCC_1 %bb.2, 4, implicit $eflags, debug-location !217
   
@@ -574,7 +574,7 @@ body:             |
     successors: %bb.1
     liveins: $rdi, $rbx, $r12, $r13, $r14, $r15, $rbp
 
-    DBG_VALUE $rdi, $noreg, !313, !DIExpression(DW_OP_plus_uconst, 1), debug-location !314
+    DBG_VALUE $rdi, $noreg, !313, !DIExpression(DW_OP_plus_uconst, 1), $noreg, !DIExpression(), debug-location !314
     JMP_1 %bb.1, debug-location !317
 
   bb.1.foo:
@@ -684,8 +684,8 @@ body:             |
     successors: %bb.2, %bb.1
     liveins: $rdi, $rbx, $r12, $r13, $r14, $r15, $rbp
   
-    DBG_VALUE $rdi, 0, !404, !DIExpression(), debug-location !405
-    DBG_VALUE $rdi, 0, !404, !DIExpression(), debug-location !405
+    DBG_VALUE $rdi, 0, !404, !DIExpression(), $noreg, !DIExpression(), debug-location !405
+    DBG_VALUE $rdi, 0, !404, !DIExpression(), $noreg, !DIExpression(), debug-location !405
     TEST64rr renamable $rdi, renamable $rdi, implicit-def $eflags, debug-location !406
     JCC_1 %bb.2, 4, implicit $eflags, debug-location !408
   

@@ -48,7 +48,7 @@ entry:
 ; CHECK: define void @salvage_bitcast
 ; CHECK-NEXT: entry:
 ; CHECK-NEXT: call void @llvm.dbg.value(metadata %struct.entry* %queue,
-; CHECK-SAME:                           metadata !DIExpression(DW_OP_plus_uconst, 0))
+; CHECK-SAME:                           metadata !DIExpression(DW_OP_plus_uconst, 0), metadata undef, metadata !DIExpression())
   store i8* %1, i8** %im_not_dead, align 8
   ret void, !dbg !23
 }
@@ -62,7 +62,7 @@ entry:
 ; CHECK: define void @salvage_gep0
 ; CHECK-NEXT: entry:
 ; CHECK-NEXT: call void @llvm.dbg.value(metadata %struct.entry* %queue,
-; CHECK-SAME:                           metadata !DIExpression(DW_OP_constu, 8, DW_OP_minus, DW_OP_plus_uconst, 0, DW_OP_stack_value))
+; CHECK-SAME:                           metadata !DIExpression(DW_OP_constu, 8, DW_OP_minus, DW_OP_plus_uconst, 0, DW_OP_stack_value), metadata undef, metadata !DIExpression())
   store %struct.entry** %1, %struct.entry*** %im_not_dead, align 8
   ret void, !dbg !26
 }
@@ -76,7 +76,7 @@ entry:
 ; CHECK: define void @salvage_gep1
 ; CHECK-NEXT: entry:
 ; CHECK-NEXT: call void @llvm.dbg.value(metadata %struct.entry* %queue,
-; CHECK-SAME:     metadata !DIExpression(DW_OP_constu, 8, DW_OP_minus, DW_OP_stack_value, DW_OP_LLVM_fragment, 0, 32))
+; CHECK-SAME:     metadata !DIExpression(DW_OP_constu, 8, DW_OP_minus, DW_OP_stack_value, DW_OP_LLVM_fragment, 0, 32), metadata undef, metadata !DIExpression())
   store %struct.entry** %1, %struct.entry*** %im_not_dead, align 8
   ret void, !dbg !29
 }
@@ -90,7 +90,7 @@ entry:
 ; CHECK: define void @salvage_gep2
 ; CHECK-NEXT: entry:
 ; CHECK-NEXT: call void @llvm.dbg.value(metadata %struct.entry* %queue,
-; CHECK-SAME:     metadata !DIExpression(DW_OP_constu, 8, DW_OP_minus, DW_OP_stack_value))
+; CHECK-SAME:     metadata !DIExpression(DW_OP_constu, 8, DW_OP_minus, DW_OP_stack_value), metadata undef, metadata !DIExpression())
   store %struct.entry** %1, %struct.entry*** %im_not_dead, align 8
   ret void, !dbg !32
 }

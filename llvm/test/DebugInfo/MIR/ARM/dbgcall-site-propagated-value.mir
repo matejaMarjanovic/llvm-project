@@ -121,7 +121,7 @@ body:             |
     $r11 = frame-setup MOVr $sp, 14, $noreg, $noreg
     frame-setup CFI_INSTRUCTION def_cfa_register $r11
     BL @value, csr_aapcs, implicit-def dead $lr, implicit $sp, implicit-def $sp, implicit-def $r0, debug-location !25
-    DBG_VALUE $r0, $noreg, !24, !DIExpression(), debug-location !26
+    DBG_VALUE $r0, $noreg, !24, !DIExpression(), $noreg, !DIExpression(), debug-location !26
     $sp = LDMIA_UPD $sp, 14, $noreg, def $r11, def $lr, debug-location !27
     TAILJMPd @callee, implicit $sp, implicit $sp, implicit killed $r0, debug-location !27
 
@@ -134,7 +134,7 @@ body:             |
     successors: %bb.2(0x30000000), %bb.1(0x50000000)
     liveins: $r0, $r4, $r10, $lr
 
-    DBG_VALUE $r0, $noreg, !33, !DIExpression(), debug-location !35
+    DBG_VALUE $r0, $noreg, !33, !DIExpression(), $noreg, !DIExpression(), debug-location !35
     $sp = frame-setup STMDB_UPD $sp, 14, $noreg, killed $r4, killed $r10, $r11, killed $lr
     frame-setup CFI_INSTRUCTION def_cfa_offset 16
     frame-setup CFI_INSTRUCTION offset $lr, -4
@@ -144,12 +144,12 @@ body:             |
     $r11 = frame-setup ADDri $sp, 8, 14, $noreg, $noreg
     frame-setup CFI_INSTRUCTION def_cfa $r11, 8
     $r4 = MOVr killed $r0, 14, $noreg, $noreg
-    DBG_VALUE $r4, $noreg, !33, !DIExpression(), debug-location !35
+    DBG_VALUE $r4, $noreg, !33, !DIExpression(), $noreg, !DIExpression(), debug-location !35
     $r0 = MOVi 205, 14, $noreg, $noreg
     $r0 = ORRri killed $r0, 43776, 14, $noreg, $noreg
     ; The MOVI and ORRri produce the second parameter's (!34) value which has
     ; been propagated from caller().
-    DBG_VALUE $r0, $noreg, !34, !DIExpression(), debug-location !35
+    DBG_VALUE $r0, $noreg, !34, !DIExpression(), $noreg, !DIExpression(), debug-location !35
     BL @interesting, csr_aapcs, implicit-def dead $lr, implicit $sp, implicit killed $r0, implicit-def $sp, implicit-def $r0, debug-location !36
     CMPri killed renamable $r0, 0, 14, $noreg, implicit-def $cpsr, debug-location !38
     Bcc %bb.2, 0, killed $cpsr, debug-location !38

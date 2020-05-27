@@ -16,11 +16,11 @@ target triple = "x86_64-apple-macosx10.7.0"
 define i32 @depth(double* nocapture %A, i32 %m) #0 !dbg !4 {
 ; CHECK-LABEL: @depth(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata double* [[A:%.*]], metadata !12, metadata !DIExpression()), !dbg !18
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[M:%.*]], metadata !13, metadata !DIExpression()), !dbg !18
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata double 0.000000e+00, metadata !14, metadata !DIExpression()), !dbg !19
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata double 2.000000e-01, metadata !15, metadata !DIExpression()), !dbg !19
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 0, metadata !16, metadata !DIExpression()), !dbg !20
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata double* [[A:%.*]], metadata !12, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !18
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[M:%.*]], metadata !13, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !18
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata double 0.000000e+00, metadata !14, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !19
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata double 2.000000e-01, metadata !15, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !19
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 0, metadata !16, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !20
 ; CHECK-NEXT:    [[CMP8:%.*]] = icmp sgt i32 [[M]], 0, !dbg !20
 ; CHECK-NEXT:    br i1 [[CMP8]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_END:%.*]], !dbg !20
 ; CHECK:       for.body.lr.ph:

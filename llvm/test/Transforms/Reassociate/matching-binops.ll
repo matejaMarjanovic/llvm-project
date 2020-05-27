@@ -288,18 +288,18 @@ define float @fmul_fdiv(float %x, float %y, float %z, float %m) {
 
 define i32 @and_shl_dbg(i32 %x, i32 %y, i32 %z, i32 %shamt) {
 ; CHECK-LABEL: @and_shl_dbg(
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[X:%.*]], metadata !7, metadata !DIExpression()), !dbg !20
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[Y:%.*]], metadata !13, metadata !DIExpression()), !dbg !21
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[Z:%.*]], metadata !14, metadata !DIExpression()), !dbg !22
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[SHAMT:%.*]], metadata !15, metadata !DIExpression()), !dbg !23
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[X:%.*]], metadata !7, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !20
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[Y:%.*]], metadata !13, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !21
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[Z:%.*]], metadata !14, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !22
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[SHAMT:%.*]], metadata !15, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !23
 ; CHECK-NEXT:    [[SHL:%.*]] = shl i32 [[X]], [[SHAMT]], !dbg !24
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[SHL]], metadata !16, metadata !DIExpression()), !dbg !25
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[SHL]], metadata !16, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !25
 ; CHECK-NEXT:    [[SHL1:%.*]] = shl i32 [[Y]], [[SHAMT]], !dbg !26
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[SHL1]], metadata !17, metadata !DIExpression()), !dbg !27
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[SHL1]], metadata !17, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !27
 ; CHECK-NEXT:    [[AND:%.*]] = and i32 [[SHL]], [[Z]], !dbg !28
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[AND]], metadata !18, metadata !DIExpression()), !dbg !29
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[AND]], metadata !18, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !29
 ; CHECK-NEXT:    [[AND2:%.*]] = and i32 [[AND]], [[SHL1]], !dbg !30
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[AND2]], metadata !19, metadata !DIExpression()), !dbg !31
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[AND2]], metadata !19, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !31
 ; CHECK-NEXT:    ret i32 [[AND2]], !dbg !32
 ;
   call void @llvm.dbg.value(metadata i32 %x, metadata !13, metadata !DIExpression()), !dbg !21

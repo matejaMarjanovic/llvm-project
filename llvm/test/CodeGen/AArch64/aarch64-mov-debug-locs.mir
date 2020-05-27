@@ -186,9 +186,9 @@ body:             |
     successors: %bb.1(0x40000000), %bb.3(0x40000000)
     liveins: $w0, $x1, $x21, $x22, $x19, $x20, $lr
   
-    DBG_VALUE $w0, $noreg, !15, !DIExpression(), debug-location !19
-    DBG_VALUE $w0, $noreg, !15, !DIExpression(), debug-location !19
-    DBG_VALUE $x1, $noreg, !16, !DIExpression(), debug-location !19
+    DBG_VALUE $w0, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !19
+    DBG_VALUE $w0, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !19
+    DBG_VALUE $x1, $noreg, !16, !DIExpression(), $noreg, !DIExpression(), debug-location !19
     early-clobber $sp = frame-setup STPXpre killed $x22, killed $x21, $sp, -6 :: (store 8 into %stack.5), (store 8 into %stack.4)
     frame-setup STPXi killed $x20, killed $x19, $sp, 2 :: (store 8 into %stack.3), (store 8 into %stack.2)
     frame-setup STPXi $fp, killed $lr, $sp, 4 :: (store 8 into %stack.1), (store 8 into %stack.0)
@@ -200,7 +200,7 @@ body:             |
     frame-setup CFI_INSTRUCTION offset $w20, -32, debug-location !23
     frame-setup CFI_INSTRUCTION offset $w21, -40, debug-location !23
     frame-setup CFI_INSTRUCTION offset $w22, -48, debug-location !23
-    DBG_VALUE 1, $noreg, !17, !DIExpression(), debug-location !20
+    DBG_VALUE 1, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !20
     dead $wzr = SUBSWri renamable $w0, 2, 0, implicit-def $nzcv, debug-location !23
     Bcc 11, %bb.3, implicit $nzcv, debug-location !23
   
@@ -210,7 +210,7 @@ body:             |
   
     $x21 = ADRP target-flags(aarch64-page) @.str
     $x19 = ORRXrs $xzr, killed $x1, 0
-    DBG_VALUE $x19, $noreg, !16, !DIExpression(), debug-location !19
+    DBG_VALUE $x19, $noreg, !16, !DIExpression(), $noreg, !DIExpression(), debug-location !19
     renamable $w22 = ORRWrs $wzr, killed renamable $w0, 0, implicit-def $x22, debug-location !24
     $w20 = MOVZWi 1, 0, implicit-def $x20
     renamable $x21 = ADDXri killed $x21, target-flags(aarch64-pageoff, aarch64-nc) @.str, 0
@@ -219,13 +219,13 @@ body:             |
     successors: %bb.3(0x04000000), %bb.2(0x7c000000)
     liveins: $x19, $x20, $x21, $x22
   
-    DBG_VALUE $x20, $noreg, !17, !DIExpression(), debug-location !20
+    DBG_VALUE $x20, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !20
     renamable $x2 = LDRXroX renamable $x19, renamable $x20, 0, 1, debug-location !25 :: (load 8 from %ir.scevgep, !tbaa !28)
     $x0 = ORRXrs $xzr, $x21, 0, debug-location !32
     $w1 = ORRWrs $wzr, $w20, 0, debug-location !32
     BL @printf, csr_aarch64_aapcs, implicit-def dead $lr, implicit $sp, implicit killed $x0, implicit killed $w1, implicit killed $x2, implicit-def $sp, implicit-def dead $w0, debug-location !32
     renamable $x20 = nuw nsw ADDXri killed renamable $x20, 1, 0, debug-location !33
-    DBG_VALUE $noreg, $noreg, !17, !DIExpression(DW_OP_plus_uconst, 1, DW_OP_stack_value), debug-location !20
+    DBG_VALUE $noreg, $noreg, !17, !DIExpression(DW_OP_plus_uconst, 1, DW_OP_stack_value), $noreg, !DIExpression(), debug-location !20
     $xzr = SUBSXrs renamable $x22, renamable $x20, 0, implicit-def $nzcv, implicit-def $nzcv, debug-location !23
     Bcc 1, %bb.2, implicit killed $nzcv, debug-location !23
   

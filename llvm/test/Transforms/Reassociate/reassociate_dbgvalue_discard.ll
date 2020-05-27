@@ -11,14 +11,14 @@ target triple = "x86_64-unknown-linux-gnu"
 define dso_local i32 @test1(i32 %a, i32 %b, i32 %c, i32 %d) local_unnamed_addr #0 !dbg !7 {
 ; CHECK-LABEL: @test1(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 undef, metadata !16, metadata !DIExpression()), !dbg !20
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 undef, metadata !17, metadata !DIExpression()), !dbg !21
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 undef, metadata !16, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !20
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 undef, metadata !17, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !21
 ; CHECK-NEXT:    [[M1:%.*]] = mul i32 [[D:%.*]], [[C:%.*]], !dbg !22
 ; CHECK-NEXT:    [[M3:%.*]] = mul i32 [[M1]], [[A:%.*]], !dbg !23
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[M3]], metadata !18, metadata !DIExpression()), !dbg !24
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[M3]], metadata !18, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !24
 ; CHECK-NEXT:    [[M2:%.*]] = mul i32 [[D]], [[C]], !dbg !25
 ; CHECK-NEXT:    [[M4:%.*]] = mul i32 [[M2]], [[B:%.*]], !dbg !26
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[M4]], metadata !19, metadata !DIExpression()), !dbg !27
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[M4]], metadata !19, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !27
 ; CHECK-NEXT:    [[RES:%.*]] = xor i32 [[M3]], [[M4]]
 ; CHECK-NEXT:    ret i32 [[RES]], !dbg !28
 ;

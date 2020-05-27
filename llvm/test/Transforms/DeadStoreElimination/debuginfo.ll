@@ -10,10 +10,10 @@ define i32* @test_salvage(i32 %arg) {
 ; Check that all four original local variables have their values preserved.
 ; CHECK-LABEL: @test_salvage(
 ; CHECK-NEXT: malloc
-; CHECK-NEXT: @llvm.dbg.value(metadata i8* %p, metadata ![[p:.*]], metadata !DIExpression())
+; CHECK-NEXT: @llvm.dbg.value(metadata i8* %p, metadata ![[p:.*]], metadata !DIExpression(), metadata i8* undef, metadata !DIExpression())
 ; CHECK-NEXT: bitcast
-; CHECK-NEXT: @llvm.dbg.value(metadata i32* %P, metadata ![[P:.*]], metadata !DIExpression())
-; CHECK-NEXT: @llvm.dbg.value(metadata i32 %arg, metadata ![[DEAD:.*]], metadata !DIExpression(DW_OP_plus_uconst, 1, DW_OP_stack_value))
+; CHECK-NEXT: @llvm.dbg.value(metadata i32* %P, metadata ![[P:.*]], metadata !DIExpression(), metadata i32* undef, metadata !DIExpression())
+; CHECK-NEXT: @llvm.dbg.value(metadata i32 %arg, metadata ![[DEAD:.*]], metadata !DIExpression(DW_OP_plus_uconst, 1, DW_OP_stack_value), metadata i32 undef, metadata !DIExpression())
 ; CHECK-NEXT: call void @test_f()
 ; CHECK-NEXT: store i32 0, i32* %P
 

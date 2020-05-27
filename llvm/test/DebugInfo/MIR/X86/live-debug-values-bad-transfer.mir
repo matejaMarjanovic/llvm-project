@@ -76,7 +76,7 @@ body:             |
     $ebx = MOV32rr $edi
     $eax = MOV32ri 0
     $ecx = MOV32ri 0
-    DBG_VALUE $ecx, $noreg, !9, !DIExpression(), debug-location !10
+    DBG_VALUE $ecx, $noreg, !9, !DIExpression(), $noreg, !DIExpression(), debug-location !10
     $edi = MOV32ri 0
     $esi = MOV32ri 0
   

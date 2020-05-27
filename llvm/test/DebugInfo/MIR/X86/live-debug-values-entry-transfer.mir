@@ -91,7 +91,7 @@ body:             |
     CFI_INSTRUCTION def_cfa_offset 16
     CFI_INSTRUCTION offset $rbx, -16
     CALL64pcrel32 @geti32, csr_64, implicit $rsp, implicit $ssp, implicit-def $rsp, implicit-def $ssp, implicit-def $eax, debug-location !10
-    DBG_VALUE $eax, $noreg, !9, !DIExpression(), debug-location !10
+    DBG_VALUE $eax, $noreg, !9, !DIExpression(), $noreg, !DIExpression(), debug-location !10
     $ebx = MOV32rr killed $eax, debug-location !10
     JMP_1 %bb.1
 

@@ -21,11 +21,15 @@ entry:
   ; Test that debug info for both values survives:
   ; CHECK: call void @llvm.dbg.value(metadata i64 0,
   ; CHECK-SAME:                      metadata ![[C:[^,]*]],
-  ; CHECK-SAME:                      metadata !DIExpression(DW_OP_LLVM_fragment, 0, 64))
+  ; CHECK-SAME:                      metadata !DIExpression(DW_OP_LLVM_fragment, 0, 64),
+  ; CHECK-SAME:                      metadata i64 undef,
+  ; CHECK-SAME:                      metadata !DIExpression())
   store double 0.000000e+00, double* %c.imagp, align 8, !dbg !17
   ; CHECK: call void @llvm.dbg.value(metadata i64 0,
   ; CHECK-SAME:                      metadata ![[C]],
-  ; CHECK-SAME:                      metadata !DIExpression(DW_OP_LLVM_fragment, 64, 64))
+  ; CHECK-SAME:                      metadata !DIExpression(DW_OP_LLVM_fragment, 64, 64)
+  ; CHECK-SAME:                      metadata i64 undef,
+  ; CHECK-SAME:                      metadata !DIExpression())
   ret void, !dbg !18
 }
 

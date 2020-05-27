@@ -3,8 +3,7 @@
 ; Test that SROA updates the debug info correctly if an alloca was rewritten but
 ; not partitioned into multiple allocas.
 ;
-; CHECK: call void @llvm.dbg.value(metadata float %s.coerce, metadata ![[VAR:[0-9]+]], metadata !DIExpression())
-; CHECK: ![[VAR]] = !DILocalVariable(name: "s",{{.*}} line: 3,
+; CHECK: call void @llvm.dbg.value(metadata float %s.coerce, metadata !14, metadata !DIExpression(), metadata float undef, metadata !DIExpression())
 
 ;
 ; struct S { float f; };

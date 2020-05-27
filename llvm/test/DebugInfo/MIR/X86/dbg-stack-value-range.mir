@@ -145,16 +145,16 @@ body:             |
   bb.0.entry:
     successors: %bb.3(0x30000000), %bb.1(0x50000000)
   
-    DBG_VALUE $edi, $noreg, !12, !DIExpression(), debug-location !15
+    DBG_VALUE $edi, $noreg, !12, !DIExpression(), $noreg, !DIExpression(), debug-location !15
     frame-setup PUSH64r killed $rbp, implicit-def $rsp, implicit $rsp
     CFI_INSTRUCTION def_cfa_offset 16
     CFI_INSTRUCTION offset $rbp, -16
     $rbp = frame-setup MOV64rr $rsp
     CFI_INSTRUCTION def_cfa_register $rbp
     $rsp = frame-setup SUB64ri8 $rsp, 16, implicit-def dead $eflags
-    DBG_VALUE 5, $noreg, !14, !DIExpression(), debug-location !15
+    DBG_VALUE 5, $noreg, !14, !DIExpression(), $noreg, !DIExpression(), debug-location !15
     $r14d = MOV32ri 4, implicit-def $r14
-    DBG_VALUE $r14d, $noreg, !13, !DIExpression(), debug-location !15
+    DBG_VALUE $r14d, $noreg, !13, !DIExpression(), $noreg, !DIExpression(), debug-location !15
     dead $eax = XOR32rr undef $eax, undef $eax, implicit-def dead $eflags, implicit-def $al, debug-location !15
     CALL64pcrel32 @check, csr_64, implicit $rsp, implicit $ssp, implicit $al, implicit-def $rsp, implicit-def $ssp, implicit-def $eax, debug-location !15
     TEST32rr killed renamable $eax, renamable $eax, implicit-def $eflags, debug-location !15
@@ -164,17 +164,17 @@ body:             |
     successors: %bb.3(0x80000000)
   
     MOV32mr $rbp, 1, $noreg, -4, $noreg, $r14d, debug-location !15 :: (store 4 into %ir.local1, !tbaa !16)
-    DBG_VALUE $rbp, $noreg, !13, !DIExpression(DW_OP_constu, 4, DW_OP_minus, DW_OP_deref), debug-location !15
+    DBG_VALUE $rbp, $noreg, !13, !DIExpression(DW_OP_constu, 4, DW_OP_minus, DW_OP_deref), $noreg, !DIExpression(), debug-location !15
     renamable $rdi = LEA64r $rbp, 1, $noreg, -4, $noreg
     CALL64pcrel32 @init, csr_64, implicit $rsp, implicit $ssp, implicit $rdi, implicit-def $rsp, implicit-def $ssp, implicit-def dead $eax, debug-location !15
-    DBG_VALUE $noreg, $noreg, !14, !DIExpression(), debug-location !15
+    DBG_VALUE $noreg, $noreg, !14, !DIExpression(), $noreg, !DIExpression(), debug-location !15
     JMP_1 %bb.3
   
   bb.3.if.end:
-    DBG_VALUE $noreg, $noreg, !14, !DIExpression(), debug-location !15
+    DBG_VALUE $noreg, $noreg, !14, !DIExpression(), $noreg, !DIExpression(), debug-location !15
     dead $eax = XOR32rr undef $eax, undef $eax, implicit-def dead $eflags, implicit-def $al, debug-location !15
     CALL64pcrel32 @init2, csr_64, implicit $rsp, implicit $ssp, implicit $al, implicit-def $rsp, implicit-def $ssp, implicit-def dead $eax, debug-location !15
-    DBG_VALUE $noreg, $noreg, !14, !DIExpression(), debug-location !15
+    DBG_VALUE $noreg, $noreg, !14, !DIExpression(), $noreg, !DIExpression(), debug-location !15
     renamable $eax = MOV32rm $rbp, 1, $noreg, -4, $noreg, debug-location !15 :: (dereferenceable load 4 from %ir.local1, !tbaa !16)
     $rsp = frame-destroy ADD64ri8 $rsp, 16, implicit-def dead $eflags, debug-location !15
     $rbp = frame-destroy POP64r implicit-def $rsp, implicit $rsp, debug-location !15

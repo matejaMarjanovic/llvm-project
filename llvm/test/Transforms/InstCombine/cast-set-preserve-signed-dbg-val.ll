@@ -20,7 +20,7 @@ define i16 @test5(i16 %A) !dbg !34 {
   call void @llvm.dbg.value(metadata i16 %D, metadata !38, metadata !DIExpression()), !dbg !42
 
   ; The dbg.value for a truncate should simply point to the result of the 16-bit 'and'.
-  ; CHECK-NEXT: call void @llvm.dbg.value(metadata i16 [[and]], metadata [[D:![0-9]+]], metadata !DIExpression())
+  ; CHECK-NEXT: call void @llvm.dbg.value(metadata i16 [[and]], metadata [[D:![0-9]+]], metadata !DIExpression(), metadata undef, metadata !DIExpression())
 
   ret i16 %D, !dbg !43
   ; CHECK-NEXT: ret i16 [[and]]

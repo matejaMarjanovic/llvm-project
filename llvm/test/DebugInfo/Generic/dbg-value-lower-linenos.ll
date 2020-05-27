@@ -55,7 +55,8 @@ bb2:
 ; CHECK-SAME:           !dbg ![[UNKNOWN2:[0-9]+]]
 ; CHECK-NEXT: store
 ; CHECK-NEXT: dbg.value(metadata i32* %map.addr, metadata ![[MAPVAR]],
-; CHECK-SAME:           metadata !DIExpression(DW_OP_deref)),
+; CHECK-SAME:           metadata !DIExpression(DW_OP_deref), metadata i32* undef,
+; CHECK-SAME:           metadata !DIExpression()),
 ; CHECK-SAME:           !dbg ![[UNKNOWN2]]
 ; CHECK-NEXT: call
 ; CHECK-NEXT: load

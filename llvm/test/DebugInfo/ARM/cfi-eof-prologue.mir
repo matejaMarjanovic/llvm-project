@@ -158,9 +158,9 @@ body:             |
     frame-setup CFI_INSTRUCTION def_cfa_offset 8
     frame-setup CFI_INSTRUCTION offset $lr, -4
     frame-setup CFI_INSTRUCTION offset $r4, -8
-    DBG_VALUE debug-use $r0, debug-use $noreg, !33, !DIExpression(), debug-location !35
+    DBG_VALUE debug-use $r0, debug-use $noreg, !33, !DIExpression(), $noreg, !DIExpression(), debug-location !35
     $r4 = tMOVr $r0, 14, $noreg
-    DBG_VALUE debug-use $r4, debug-use $noreg, !33, !DIExpression(), debug-location !35
+    DBG_VALUE debug-use $r4, debug-use $noreg, !33, !DIExpression(), $noreg, !DIExpression(), debug-location !35
     tBL 14, $noreg, @_ZN1AC2Ev, csr_ios, implicit-def dead $lr, implicit $sp, implicit killed $r0, implicit-def $sp, implicit-def dead $r0, debug-location !36
     $r0 = t2MOVi16_ga_pcrel target-flags(arm-lo16, arm-nonlazy) @_ZTV1B, 0, debug-location !36
     $r0 = t2MOVTi16_ga_pcrel killed $r0, target-flags(arm-hi16, arm-nonlazy) @_ZTV1B, 0, debug-location !36
@@ -194,11 +194,11 @@ body:             |
     frame-setup CFI_INSTRUCTION def_cfa_offset 8
     frame-setup CFI_INSTRUCTION offset $lr, -4
     frame-setup CFI_INSTRUCTION offset $r4, -8
-    DBG_VALUE debug-use $r0, debug-use $noreg, !42, !DIExpression(), debug-location !43
-    DBG_VALUE debug-use $r0, debug-use $noreg, !33, !DIExpression(), debug-location !44
+    DBG_VALUE debug-use $r0, debug-use $noreg, !42, !DIExpression(), $noreg, !DIExpression(), debug-location !43
+    DBG_VALUE debug-use $r0, debug-use $noreg, !33, !DIExpression(), $noreg, !DIExpression(), debug-location !44
     $r4 = tMOVr $r0, 14, $noreg
-    DBG_VALUE debug-use $r4, debug-use $noreg, !33, !DIExpression(), debug-location !44
-    DBG_VALUE debug-use $r4, debug-use $noreg, !42, !DIExpression(), debug-location !43
+    DBG_VALUE debug-use $r4, debug-use $noreg, !33, !DIExpression(), $noreg, !DIExpression(), debug-location !44
+    DBG_VALUE debug-use $r4, debug-use $noreg, !42, !DIExpression(), $noreg, !DIExpression(), debug-location !43
     tBL 14, $noreg, @_ZN1AC2Ev, csr_ios, implicit-def dead $lr, implicit $sp, implicit killed $r0, implicit-def $sp, implicit-def dead $r0, debug-location !46
     $r0 = t2MOVi16_ga_pcrel target-flags(arm-lo16, arm-nonlazy) @_ZTV1B, 0, debug-location !46
     $r0 = t2MOVTi16_ga_pcrel killed $r0, target-flags(arm-hi16, arm-nonlazy) @_ZTV1B, 0, debug-location !46

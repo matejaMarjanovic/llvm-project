@@ -219,14 +219,14 @@ body:             |
     frame-setup CFI_INSTRUCTION offset $r6, -16
     frame-setup CFI_INSTRUCTION offset $r5, -20
     frame-setup CFI_INSTRUCTION offset $r4, -24
-    DBG_VALUE $r0, $noreg, !13, !20, debug-location !21
+    DBG_VALUE $r0, $noreg, !13, !20, $noreg, !DIExpression(), debug-location !21
     $r4 = MOVr killed $r0, 14, $noreg, $noreg
-    DBG_VALUE $r4, $noreg, !13, !20, debug-location !21
+    DBG_VALUE $r4, $noreg, !13, !20, $noreg, !DIExpression(), debug-location !21
     $r0 = MOVi 10, 14, $noreg, _, debug-location !22
     $r1 = MOVi 11, 14, $noreg, _, debug-location !22
     BL @func2, csr_aapcs, implicit-def dead $lr, implicit $sp, implicit killed $r0, implicit killed $r1, implicit-def $sp, implicit-def $r0, debug-location !22
     $r5 = MOVr killed $r0, 14, $noreg, _, debug-location !22
-    DBG_VALUE $r5, $noreg, !14, !20, debug-location !23
+    DBG_VALUE $r5, $noreg, !14, !20, $noreg, !DIExpression(), debug-location !23
     CMPri $r4, 0, 14, $noreg, implicit-def $cpsr, debug-location !25
     Bcc %bb.5.if.end, 0, killed $cpsr
   
@@ -237,9 +237,9 @@ body:             |
     $r1 = MOVi 13, 14, $noreg, _, debug-location !26
     BL @func2, csr_aapcs, implicit-def dead $lr, implicit $sp, implicit killed $r0, implicit killed $r1, implicit-def $sp, implicit-def $r0, debug-location !26
     $r6 = MOVr killed $r0, 14, $noreg, _, debug-location !26
-    DBG_VALUE $r6, $noreg, !15, !20, debug-location !27
+    DBG_VALUE $r6, $noreg, !15, !20, $noreg, !DIExpression(), debug-location !27
     $r7 = MOVi 1, 14, $noreg, $noreg
-    DBG_VALUE 1, 0, !18, !20, debug-location !28
+    DBG_VALUE 1, 0, !18, !20, $noreg, !DIExpression(), debug-location !28
     B %bb.3.for.cond
   
   bb.2.for.body:
@@ -249,12 +249,12 @@ body:             |
     $r0 = MOVr $r7, 14, $noreg, _, debug-location !36
     BL @func2, csr_aapcs, implicit-def dead $lr, implicit $sp, implicit killed $r0, implicit killed $r1, implicit-def $sp, implicit-def dead $r0, debug-location !36
     $r7 = ADDri killed $r7, 1, 14, $noreg, _, debug-location !38
-    DBG_VALUE $r7, $noreg, !18, !20, debug-location !28
+    DBG_VALUE $r7, $noreg, !18, !20, $noreg, !DIExpression(), debug-location !28
   
   bb.3.for.cond:
     liveins: $r4, $r5, $r6, $r7
   
-    DBG_VALUE $r7, $noreg, !18, !20, debug-location !28
+    DBG_VALUE $r7, $noreg, !18, !20, $noreg, !DIExpression(), debug-location !28
     CMPrr $r7, $r4, 14, $noreg, implicit-def $cpsr, debug-location !33
     Bcc %bb.2.for.body, 11, killed $cpsr, debug-location !33
   

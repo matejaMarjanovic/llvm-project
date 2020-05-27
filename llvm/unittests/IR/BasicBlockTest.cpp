@@ -105,13 +105,14 @@ TEST(BasicBlockTest, TestInstructionsWithoutDebug) {
   Function *DbgValue = Intrinsic::getDeclaration(M, Intrinsic::dbg_value);
   Value *DIV = MetadataAsValue::get(Ctx, (Metadata *)nullptr);
   SmallVector<Value *, 3> Args = {DIV, DIV, DIV};
+  SmallVector<Value *, 5> ValueArgs = {DIV, DIV, DIV, DIV, DIV};
 
   BasicBlock *BB1 = BasicBlock::Create(Ctx, "", F);
   const BasicBlock *BBConst = BB1;
   IRBuilder<> Builder1(BB1);
 
   AllocaInst *Var = Builder1.CreateAlloca(Builder1.getInt8Ty());
-  Builder1.CreateCall(DbgValue, Args);
+  Builder1.CreateCall(DbgValue, ValueArgs);
   Instruction *AddInst = cast<Instruction>(Builder1.CreateAdd(V, V));
   Instruction *MulInst = cast<Instruction>(Builder1.CreateMul(AddInst, V));
   Builder1.CreateCall(DbgDeclare, Args);

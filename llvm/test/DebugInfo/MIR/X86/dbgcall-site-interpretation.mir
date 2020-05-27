@@ -133,10 +133,10 @@ body:             |
   bb.0.entry:
     liveins: $ecx, $edi, $edx, $esi, $r15, $r14, $rbx
   
-    DBG_VALUE $edi, $noreg, !14, !DIExpression(), debug-location !21
-    DBG_VALUE $esi, $noreg, !15, !DIExpression(), debug-location !21
-    DBG_VALUE $edx, $noreg, !16, !DIExpression(), debug-location !21
-    DBG_VALUE $ecx, $noreg, !17, !DIExpression(), debug-location !21
+    DBG_VALUE $edi, $noreg, !14, !DIExpression(), $noreg, !DIExpression(), debug-location !21
+    DBG_VALUE $esi, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !21
+    DBG_VALUE $edx, $noreg, !16, !DIExpression(), $noreg, !DIExpression(), debug-location !21
+    DBG_VALUE $ecx, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !21
     frame-setup PUSH64r killed $r15, implicit-def $rsp, implicit $rsp
     CFI_INSTRUCTION def_cfa_offset 16
     frame-setup PUSH64r killed $r14, implicit-def $rsp, implicit $rsp
@@ -149,7 +149,7 @@ body:             |
     CFI_INSTRUCTION offset $r14, -24
     CFI_INSTRUCTION offset $r15, -16
     $r14d = MOV32rr $ecx, implicit-def $r14
-    DBG_VALUE $edx, $noreg, !16, !DIExpression(), debug-location !21
+    DBG_VALUE $edx, $noreg, !16, !DIExpression(), $noreg, !DIExpression(), debug-location !21
     $r15d = MOV32rr $esi, implicit-def $r15
     $ebx = MOV32rr $edi, implicit-def $rbx
     $edi = MOV32rr $esi
@@ -157,14 +157,14 @@ body:             |
     renamable $rdx = LEA64r $rsp, 1, $noreg, 8, $noreg
     renamable $ecx = MOV32rr $r14d,
     CALL64pcrel32 @foo, csr_64, implicit $rsp, implicit $ssp, implicit $edi, implicit $esi, implicit $rdx, implicit $ecx, implicit-def $rsp, implicit-def $ssp, implicit-def $eax, implicit-def $rax, debug-location !21
-    DBG_VALUE $noreg, $noreg, !18, !DIExpression(), debug-location !21
+    DBG_VALUE $noreg, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !21
     $rdx = MOV64rr renamable $rax
     $ecx = KILL renamable $ecx, implicit-def $rcx 
     renamable $eax = LEA64_32r renamable $rcx, 1, renamable $rbx, 0, $noreg, debug-location !21
     renamable $edi = LEA64_32r renamable $r14, 1, renamable $r15, 0, $noreg, debug-location !21
     CMP32rr renamable $ebx, renamable $r15d, implicit-def $eflags, implicit killed $r15, debug-location !21
     renamable $edi = CMOV32rr killed renamable $edi, killed renamable $eax, 15, implicit killed $eflags, debug-location !21
-    DBG_VALUE $edi, $noreg, !18, !DIExpression(), debug-location !21
+    DBG_VALUE $edi, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !21
     $eax = MOV32rr $ecx, debug-location !21
     CDQ implicit-def $eax, implicit-def $edx, implicit $eax, debug-location !21
     IDIV32r renamable $ebx, implicit-def dead $eax, implicit-def $edx, implicit-def dead $eflags, implicit $eax, implicit $edx, debug-location !21
@@ -173,27 +173,27 @@ body:             |
     renamable $ecx = nsw ADD32rr renamable $ecx, renamable $r14d, implicit-def dead $eflags, implicit killed $rcx, implicit-def $rcx, debug-location !21
     TEST32rr killed renamable $edx, renamable $edx, implicit-def $eflags, debug-location !21
     renamable $ecx = CMOV32rr renamable $ecx, killed renamable $eax, 4, implicit killed $eflags, implicit killed $rcx, implicit-def $rcx, debug-location !21
-    DBG_VALUE $ecx, $noreg, !19, !DIExpression(), debug-location !21
+    DBG_VALUE $ecx, $noreg, !19, !DIExpression(), $noreg, !DIExpression(), debug-location !21
     MOV32mr $rsp, 1, $noreg, 12, $noreg, renamable $ecx, debug-location !21 :: (store 4 into %ir.local2)
     CMP32rr renamable $ecx, renamable $r14d, implicit-def $eflags, implicit killed $r14, debug-location !21
     renamable $ebx = CMOV32rr renamable $ebx, renamable $edi, 12, implicit killed $eflags, implicit killed $rbx, implicit-def $rbx, debug-location !21
     renamable $ecx = nsw IMUL32rr renamable $ecx, renamable $ebx, implicit-def dead $eflags, implicit killed $rbx, implicit killed $rcx, implicit-def $rcx, debug-location !21
-    DBG_VALUE $rsp, $noreg, !19, !DIExpression(DW_OP_plus_uconst, 12, DW_OP_deref), debug-location !21
-    DBG_VALUE $ecx, $noreg, !20, !DIExpression(), debug-location !21
+    DBG_VALUE $rsp, $noreg, !19, !DIExpression(DW_OP_plus_uconst, 12, DW_OP_deref), $noreg, !DIExpression(), debug-location !21
+    DBG_VALUE $ecx, $noreg, !20, !DIExpression(), $noreg, !DIExpression(), debug-location !21
     $esi = MOV32ri 4, debug-location !21
     renamable $ecx = MOV32rm $rsp, 1, $noreg, 8, $noreg, implicit-def $rcx, debug-location !21 :: (dereferenceable load 4 from %ir.arg3.addr)
     CALL64pcrel32 @foo, csr_64, implicit $rsp, implicit $ssp, implicit $edi, implicit $esi, implicit $rdx, implicit $ecx, implicit-def $rsp, implicit-def $ssp, implicit-def $eax, implicit-def $rax, debug-location !21
-    DBG_VALUE $eax, $noreg, !14, !DIExpression(), debug-location !21
+    DBG_VALUE $eax, $noreg, !14, !DIExpression(), $noreg, !DIExpression(), debug-location !21
     renamable $eax = nsw ADD32ri8 killed renamable $eax, 4, implicit-def dead $eflags, debug-location !21
     $rsp = frame-destroy ADD64ri8 $rsp, 16, implicit-def dead $eflags, debug-location !21
     CFI_INSTRUCTION def_cfa_offset 32, debug-location !21
     $rbx = frame-destroy POP64r implicit-def $rsp, implicit $rsp, debug-location !21
     CFI_INSTRUCTION def_cfa_offset 24, debug-location !21
     $r14 = frame-destroy POP64r implicit-def $rsp, implicit $rsp, debug-location !21
-    DBG_VALUE $ecx, $noreg, !17, !DIExpression(DW_OP_LLVM_entry_value, 1), debug-location !21
+    DBG_VALUE $ecx, $noreg, !17, !DIExpression(DW_OP_LLVM_entry_value, 1), $noreg, !DIExpression(), debug-location !21
     CFI_INSTRUCTION def_cfa_offset 16, debug-location !21
     $r15 = frame-destroy POP64r implicit-def $rsp, implicit $rsp, debug-location !21
-    DBG_VALUE $esi, $noreg, !15, !DIExpression(DW_OP_LLVM_entry_value, 1), debug-location !21
+    DBG_VALUE $esi, $noreg, !15, !DIExpression(DW_OP_LLVM_entry_value, 1), $noreg, !DIExpression(), debug-location !21
     CFI_INSTRUCTION def_cfa_offset 8, debug-location !21
     RETQ $eax, debug-location !21
 

@@ -41,7 +41,7 @@ entry:
   call void @llvm.lifetime.start.p0i8(i64 16, i8* %0)
   call void @llvm.dbg.declare(metadata %struct.F* %tmp, metadata !10, metadata !DIExpression()), !dbg !14
   ; CHECK-NOT: !DIExpression(DW_OP_LLVM_fragment, 32, 96)
-  ; CHECK: call void @llvm.dbg.value(metadata i32 0, metadata !10, metadata !DIExpression())
+  ; CHECK: call void @llvm.dbg.value(metadata i32 0, metadata !10, metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
   %_Myval2.i.i.i.i.i = bitcast %struct.F* %tmp to i32*
   store i32 0, i32* %_Myval2.i.i.i.i.i, align 8
   ret void

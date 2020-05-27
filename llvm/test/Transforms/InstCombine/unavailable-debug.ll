@@ -2,7 +2,7 @@
 
 ; Make sure to update the debug value after dead code elimination.
 ; CHECK: %call = call signext i8 @b(i32 6), !dbg !39
-; CHECK-NEXT: call void @llvm.dbg.value(metadata i32 undef, metadata !30, metadata !DIExpression()), !dbg !38
+; CHECK-NEXT: call void @llvm.dbg.value(metadata i32 undef, metadata !30, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !38
 
 @e = common local_unnamed_addr global i8 0, align 1, !dbg !0
 @c = common local_unnamed_addr global i32 0, align 4, !dbg !6

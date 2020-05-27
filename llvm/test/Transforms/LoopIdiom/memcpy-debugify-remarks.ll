@@ -18,17 +18,17 @@ define void @test6_dest_align(i32* noalias align 1 %Base, i32* noalias align 4 %
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]], !dbg !18
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVAR:%.*]] = phi i64 [ 0, [[BB_NPH:%.*]] ], [ [[INDVAR_NEXT:%.*]], [[FOR_BODY]] ], !dbg !20
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i64 [[INDVAR]], metadata !9, metadata !DIExpression()), !dbg !20
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i64 [[INDVAR]], metadata !9, metadata !DIExpression(), metadata i64 undef, metadata !DIExpression()), !dbg !20
 ; CHECK-NEXT:    [[I_0_014:%.*]] = getelementptr i32, i32* [[BASE]], i64 [[INDVAR]], !dbg !21
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32* [[I_0_014]], metadata !11, metadata !DIExpression()), !dbg !21
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32* [[I_0_014]], metadata !11, metadata !DIExpression(), metadata i32* undef, metadata !DIExpression()), !dbg !21
 ; CHECK-NEXT:    [[DESTI:%.*]] = getelementptr i32, i32* [[DEST]], i64 [[INDVAR]], !dbg !22
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32* [[DESTI]], metadata !12, metadata !DIExpression()), !dbg !22
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32* [[DESTI]], metadata !12, metadata !DIExpression(), metadata i32* undef, metadata !DIExpression()), !dbg !22
 ; CHECK-NEXT:    [[V:%.*]] = load i32, i32* [[I_0_014]], align 1, !dbg !23
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[V]], metadata !13, metadata !DIExpression()), !dbg !23
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 [[V]], metadata !13, metadata !DIExpression(), metadata i32 undef, metadata !DIExpression()), !dbg !23
 ; CHECK-NEXT:    [[INDVAR_NEXT]] = add i64 [[INDVAR]], 1, !dbg !24
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i64 [[INDVAR_NEXT]], metadata !15, metadata !DIExpression()), !dbg !24
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i64 [[INDVAR_NEXT]], metadata !15, metadata !DIExpression(), metadata i64 undef, metadata !DIExpression()), !dbg !24
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i64 [[INDVAR_NEXT]], [[SIZE]], !dbg !25
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i1 [[EXITCOND]], metadata !16, metadata !DIExpression()), !dbg !25
+; CHECK-NEXT:    call void @llvm.dbg.value(metadata i1 [[EXITCOND]], metadata !16, metadata !DIExpression(), metadata i1 undef, metadata !DIExpression()), !dbg !25
 ; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_END:%.*]], label [[FOR_BODY]], !dbg !26
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret void, !dbg !27

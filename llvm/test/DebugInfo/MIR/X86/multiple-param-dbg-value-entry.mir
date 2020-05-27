@@ -9,9 +9,9 @@
 #
 # Verify that DW_OP_LLVM_entry_values are generated for parameters with multiple
 # DBG_VALUEs at entry block.
-# CHECK: DBG_VALUE $edi, $noreg, !{{.*}}, !DIExpression(DW_OP_LLVM_entry_value, 1), debug-location {{.*}}
-# CHECK: DBG_VALUE $edx, $noreg, !{{.*}}, !DIExpression(DW_OP_LLVM_entry_value, 1), debug-location {{.*}}
-# CHECK: DBG_VALUE $esi, $noreg, !{{.*}}, !DIExpression(DW_OP_LLVM_entry_value, 1), debug-location {{.*}}
+# CHECK: DBG_VALUE $edi, $noreg, !{{.*}}, !DIExpression(DW_OP_LLVM_entry_value, 1), $noreg, !DIExpression(), debug-location {{.*}}
+# CHECK: DBG_VALUE $edx, $noreg, !{{.*}}, !DIExpression(DW_OP_LLVM_entry_value, 1), $noreg, !DIExpression(), debug-location {{.*}}
+# CHECK: DBG_VALUE $esi, $noreg, !{{.*}}, !DIExpression(DW_OP_LLVM_entry_value, 1), $noreg, !DIExpression(), debug-location {{.*}}
 
 --- |
   ; ModuleID = 'multiple-param-dbg-value-entry.ll'
@@ -70,10 +70,10 @@ body:             |
   bb.0.entry:
     liveins: $edi
 
-    DBG_VALUE $edi, $noreg, !15, !DIExpression(), debug-location !18
-    DBG_VALUE $edi, $noreg, !15, !DIExpression(), debug-location !18
-    DBG_VALUE $esi, $noreg, !16, !DIExpression(), debug-location !18
-    DBG_VALUE $edx, $noreg, !17, !DIExpression(), debug-location !18
+    DBG_VALUE $edi, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !18
+    DBG_VALUE $edi, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !18
+    DBG_VALUE $esi, $noreg, !16, !DIExpression(), $noreg, !DIExpression(), debug-location !18
+    DBG_VALUE $edx, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !18
     renamable $edi = nsw INC32r killed renamable $edi, implicit-def dead $eflags, debug-location !18
     MOV32mr $rip, 1, $noreg, @global, $noreg, killed renamable $edi, debug-location !18 :: (store 4 into @global)
     INLINEASM &"", 1, 12, implicit-def dead early-clobber $edi, 12, implicit-def dead early-clobber $esi, 12, implicit-def dead early-clobber $edx, 12, implicit-def dead early-clobber $df, 12, implicit-def dead early-clobber $fpsw, 12, implicit-def dead early-clobber $eflags, !19, debug-location !18

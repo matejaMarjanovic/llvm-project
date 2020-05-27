@@ -98,7 +98,7 @@ body:             |
     ; CHECK: %3:gr64_nosp = LEA64r %2, 2, %2, 0, $noreg, debug-location !13
     ; CHECK-NEXT: %4:gr64 = LEA64r %1, 4, %3, 0, $noreg, debug-location !13
     ; CHECK-NOT: %0:gr64 = LEA64r %1, 4, %3, 8, $noreg, debug-location !14
-    ; CHECK: DBG_VALUE %4, $noreg, !11, !DIExpression(DW_OP_plus_uconst, 8, DW_OP_stack_value), debug-location !15
+    ; CHECK: DBG_VALUE %4, $noreg, !11, !DIExpression(DW_OP_plus_uconst, 8, DW_OP_stack_value), $noreg, !DIExpression(), debug-location !15
 
     %1 = MOV64rm $rip, 1, $noreg, @c, $noreg, debug-location !13 :: (dereferenceable load 8 from @c)
     %2 = MOVSX64rm32 $rip, 1, $noreg, @a, $noreg, debug-location !13 :: (dereferenceable load 4 from @a)

@@ -14,7 +14,7 @@ entry:
   %foo.0.foo.0.16 = load volatile i32, i32* %foo, align 4, !dbg !28, !tbaa !21
   ; CHECK-NOT: %add = add nsw i32 %foo.0.foo.0., %foo.0.foo.0.15
   %add = add nsw i32 %foo.0.foo.0., %foo.0.foo.0.15, !dbg !29
-  ; CHECK: call void @llvm.dbg.value(metadata i32 undef, metadata [[VAR_A:![0-9]+]], metadata !DIExpression())
+  ; CHECK: call void @llvm.dbg.value(metadata i32 %foo.0.foo.0.15, metadata [[VAR_A:![0-9]+]], metadata !DIExpression(DW_OP_LLVM_reg_plus, DW_OP_stack_value), metadata i32 %foo.0.foo.0., metadata !DIExpression())
   call void @llvm.dbg.value(metadata i32 %add, metadata !19, metadata !DIExpression()), !dbg !26
   %foo.0.foo.0.17 = load volatile i32, i32* %foo, align 4, !dbg !30, !tbaa !21
   %cmp = icmp eq i32 %foo.0.foo.0.17, 4, !dbg !30
@@ -24,9 +24,9 @@ entry:
 if.then:
   ; CHECK-NOT: %add1 = add nsw i32 %add, %foo.0.foo.0.16
   %add1 = add nsw i32 %add, %foo.0.foo.0.16, !dbg !33
-  ; CHECK: call void @llvm.dbg.value(metadata i32 undef, metadata [[VAR_A]], metadata !DIExpression())
+  ; CHECK:   call void @llvm.dbg.value(metadata i32 %foo.0.foo.0.15, metadata [[VAR_A]], metadata !DIExpression(DW_OP_LLVM_reg_plus, DW_OP_LLVM_reg_plus, DW_OP_stack_value), metadata i32 %foo.0.foo.0., metadata !DIExpression())
   call void @llvm.dbg.value(metadata i32 %add1, metadata !19, metadata !DIExpression()), !dbg !26
-  ; CHECK: call void @llvm.dbg.value(metadata i32 undef, metadata [[VAR_CHEESE:![0-9]+]], metadata !DIExpression())
+  ; CHECK:   call void @llvm.dbg.value(metadata i32 %foo.0.foo.0.15, metadata [[VAR_CHEESE:![0-9]+]], metadata !DIExpression(DW_OP_LLVM_reg_plus, DW_OP_stack_value), metadata i32 %foo.0.foo.0., metadata !DIExpression())
   call void @llvm.dbg.value(metadata i32 %add, metadata !18, metadata !DIExpression()), !dbg !26
   %sub = add nsw i32 %add, -12, !dbg !34
   %sub3 = sub nsw i32 %add1, %sub, !dbg !34

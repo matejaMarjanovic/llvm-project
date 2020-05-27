@@ -36,9 +36,9 @@ declare %struct.Channel* @foo(...) local_unnamed_addr #1
 define internal zeroext i1 @f1(i1 zeroext %is_y, %struct.Channel* %str) #4 !dbg !34 {
 entry:
   %frombool = zext i1 %is_y to i8
-; CHECK: call void @llvm.dbg.value(metadata i1 %is_y, metadata !39, metadata !DIExpression()), !dbg !42
+; CHECK: call void @llvm.dbg.value(metadata i1 %is_y, metadata !39, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !42
   call void @llvm.dbg.value(metadata i1 %is_y, metadata !39, metadata !DIExpression()), !dbg !42
-; CHECK: call void @llvm.dbg.value(metadata %struct.Channel* %str, metadata !40, metadata !DIExpression()), !dbg !43
+; CHECK: call void @llvm.dbg.value(metadata %struct.Channel* %str, metadata !40, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !43
   call void @llvm.dbg.value(metadata %struct.Channel* %str, metadata !40, metadata !DIExpression()), !dbg !43
   call void @llvm.dbg.value(metadata %struct.Channel* null, metadata !41, metadata !DIExpression()), !dbg !44
   %tobool = icmp ne %struct.Channel* %str, null, !dbg !45

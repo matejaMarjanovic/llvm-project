@@ -8,7 +8,7 @@ define i32 @tak(i32 %x, i32 %y, i32 %z) nounwind ssp !dbg !0 {
 ; CHECK-LABEL: define i32 @tak(
 ; CHECK: entry
 ; CHECK-NEXT: call void @llvm.dbg.value(metadata i32 %x
-; CHECK: tail call void @llvm.dbg.value(metadata i32 %call
+; CHECK: call void @llvm.dbg.value(metadata i32 %call
 
 entry:
   br label %tailrecurse
@@ -42,8 +42,8 @@ return:                                           ; preds = %if.end
 define i32 @tak2(i32 %x, i32 %y, i32 %z) nounwind ssp !dbg !21 {
 ; CHECK-LABEL: define i32 @tak2(
 ; CHECK: entry
-; CHECK: tail call void @llvm.dbg.value(metadata i32 %x.tr
-; CHECK: tail call void @llvm.dbg.value(metadata i32 undef
+; CHECK: call void @llvm.dbg.value(metadata i32 %x.tr
+; CHECK: call void @llvm.dbg.value(metadata i32 undef
 
 entry:
   br label %tailrecurse
@@ -85,7 +85,7 @@ define void @FindFreeHorzSeg(i64 %startCol, i64 %row, i64* %rowStart) {
 ; body, even though it contains a debug intrinsic call.
 ; CHECK-LABEL: define void @FindFreeHorzSeg(
 ; CHECK: %dec = add
-; CHECK-NEXT: tail call void @llvm.dbg.value
+; CHECK-NEXT: call void @llvm.dbg.value
 ; CHECK: %cmp = icmp
 ; CHECK: br i1 %cmp
 ; CHECK: phi i64 [ %{{[^,]*}}, %{{[^,]*}} ]

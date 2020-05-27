@@ -82,26 +82,26 @@ body:             |
     frame-setup CFI_INSTRUCTION offset $w30, -8, debug-location !12
     frame-setup CFI_INSTRUCTION offset $w29, -16, debug-location !12
     renamable $w0 = ADDWri killed renamable $w0, 1, 0, debug-location !12
-    DBG_VALUE renamable $w0, $noreg, !9, !DIExpression(), debug-location !12
+    DBG_VALUE renamable $w0, $noreg, !9, !DIExpression(), $noreg, !DIExpression(), debug-location !12
     STRWui killed $w0, $sp, 3 :: (store 4 into %stack.0)
-    DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12), debug-location !12
+    DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12), $noreg, !DIExpression(), debug-location !12
 
-    ; CHECK: DBG_VALUE renamable $w0, $noreg, !9, !DIExpression(), debug-location !12
+    ; CHECK: DBG_VALUE renamable $w0, $noreg, !9, !DIExpression(), $noreg, !DIExpression(), debug-location !12
     ; CHECK-NEXT: STRWui killed $w0, $sp, 3 :: (store 4 into %stack.0)
-    ; CHECK-NEXT: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12)
-    ; CHECK-NEXT: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12)
+    ; CHECK-NEXT: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12), $noreg, !DIExpression()
+    ; CHECK-NEXT: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12), $noreg, !DIExpression()
   
   bb.1.artificial-bb-1:
     ; CHECK-LABEL: bb.1.artificial-bb-1:
-    ; CHECK: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12)
+    ; CHECK: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12), $noreg, !DIExpression()
       
   bb.2.artificial-bb-2:
     ; CHECK-LABEL: bb.2.artificial-bb-2:
-    ; CHECK: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12)
+    ; CHECK: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12), $noreg, !DIExpression()
   
   bb.3.return:
     ; CHECK-LABEL: bb.3.return:
-    ; CHECK: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12)
+    ; CHECK: DBG_VALUE $sp, 0, !9, !DIExpression(DW_OP_plus_uconst, 12), $noreg, !DIExpression()
 
     $w0 = LDRWui $sp, 3 :: (load 4 from %stack.0)
     BL @use, csr_aarch64_aapcs, implicit-def $lr, implicit $sp, implicit killed $w0

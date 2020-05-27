@@ -67,12 +67,12 @@ body:             |
     liveins: $rcx, $rdi, $rdx, $rsi, $r8, $r9d, $rbp, $r15, $r14, $r13, $r12, $rbx
   
     ; Setup
-    DBG_VALUE $r9d, $noreg, !9, !DIExpression(), debug-location !10
+    DBG_VALUE $r9d, $noreg, !9, !DIExpression(), $noreg, !DIExpression(), debug-location !10
     $rsp = frame-setup SUB64ri8 $rsp, 24, implicit-def dead $eflags
 
     ; Spill
     MOV32mr $rsp, 1, $noreg, 16, $noreg, $r9d :: (store 4 into %stack.0)
-    DBG_VALUE $rsp, 0, !9, !DIExpression(DW_OP_plus_uconst, 16), debug-location !10
+    DBG_VALUE $rsp, 0, !9, !DIExpression(DW_OP_plus_uconst, 16), $noreg, !DIExpression(), debug-location !10
 
     ; This load from the stack can be misinterpreted as a stack restore of
     ; any DBG_VALUe pointing at $rsp.

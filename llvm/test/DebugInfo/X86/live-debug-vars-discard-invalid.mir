@@ -64,7 +64,7 @@ body:             |
 
   bb.1:
     ; This DBG_VALUE will be discarded (use before def of %0).
-    DBG_VALUE %0, $noreg, !18, !DIExpression(), debug-location !25
+    DBG_VALUE %0, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !25
     %0:gr64 = IMPLICIT_DEF
     %0:gr64 = IMPLICIT_DEF
     %0:gr64 = IMPLICIT_DEF
@@ -72,32 +72,32 @@ body:             |
 
   bb.2:
     ; This DBG_VALUE will be discarded (%1 is defined earlier, but it is not live in, so we do not know where %1 is stored).
-    DBG_VALUE %1, $noreg, !18, !DIExpression(), debug-location !25
+    DBG_VALUE %1, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !25
     %1:gr64 = IMPLICIT_DEF
     %1:gr64 = IMPLICIT_DEF
     %1:gr64 = IMPLICIT_DEF
     %1:gr64 = IMPLICIT_DEF
     ; This DBG_VALUE is kept, even if %1 is dead, it was defined in the prev instruction,
     ; so the value should be available for as long as the register allocated to %1 is live.
-    DBG_VALUE %1, $noreg, !18, !DIExpression(), debug-location !25
+    DBG_VALUE %1, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !25
 
   bb.3:
     %1:gr64 = IMPLICIT_DEF
-    DBG_VALUE 0, $noreg, !23, !DIExpression(), debug-location !25
+    DBG_VALUE 0, $noreg, !23, !DIExpression(), $noreg, !DIExpression(), debug-location !25
     ; This DBG_VALUE is kept, even if %1 is dead, it was defined in the prev non-dbg instruction,
     ; so the value should be available for as long as the register allocated to %1 is live.
-    DBG_VALUE %1, $noreg, !18, !DIExpression(), debug-location !25
+    DBG_VALUE %1, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !25
 
   bb.4:
     ; All DBG_VALUEs here should survive. %2 is livein as it was defined in bb.0, and it has use/def in the BTS64ri8 instruction.
-    DBG_VALUE %2, $noreg, !18, !DIExpression(), debug-location !25
+    DBG_VALUE %2, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !25
     %2:gr64 = BTS64ri8 %2, 0, implicit-def $eflags
-    DBG_VALUE 0, $noreg, !23, !DIExpression(), debug-location !25
-    DBG_VALUE %2, $noreg, !18, !DIExpression(), debug-location !25
+    DBG_VALUE 0, $noreg, !23, !DIExpression(), $noreg, !DIExpression(), debug-location !25
+    DBG_VALUE %2, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !25
     %2:gr64 = BTS64ri8 %2, 0, implicit-def $eflags
-    DBG_VALUE %2, $noreg, !18, !DIExpression(), debug-location !25
+    DBG_VALUE %2, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !25
     %2:gr64 = BTS64ri8 %2, 0, implicit-def $eflags
-    DBG_VALUE %2, $noreg, !18, !DIExpression(), debug-location !25
+    DBG_VALUE %2, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !25
 
   bb.5:
     RET 0, debug-location !32

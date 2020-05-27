@@ -27,9 +27,9 @@ entry:
 }
 
 ; CHECK-LABEL: define void @f(i8* %p)
-; CHECK: call void @llvm.dbg.value(metadata i8* %p, metadata ![[P_VAR:[0-9]+]], metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i8* %p, metadata ![[P_VAR:[0-9]+]], metadata !DIExpression(), metadata undef, metadata !DIExpression())
 ; CHECK-NOT: bitcast
-; CHECK: call void @llvm.dbg.value(metadata i8* %p, metadata ![[Q_VAR:[0-9]+]], metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i8* %p, metadata ![[Q_VAR:[0-9]+]], metadata !DIExpression(), metadata undef, metadata !DIExpression())
 ; CHECK-NOT: bitcast
 ; CHECK ret void
 

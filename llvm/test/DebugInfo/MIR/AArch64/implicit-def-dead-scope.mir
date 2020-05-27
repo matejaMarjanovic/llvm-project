@@ -211,7 +211,7 @@ body:             |
     $x3 = IMPLICIT_DEF debug-location !32
     $x1 = IMPLICIT_DEF
     STRXui $x2, $sp, 2 :: (store 8 into %ir.2)
-    DBG_VALUE 0, 0, !18, !23, debug-location !24
+    DBG_VALUE 0, 0, !18, !23, $noreg, !DIExpression(), debug-location !24
     STRXui $x2, $sp, 0, debug-location !27 :: (store 8 into %ir.1)
     $w4 = ORRWri $wzr, 0, implicit-def $x4
     B %bb.5.sw.epilog

@@ -110,15 +110,15 @@ body:             |
     %2:gr64 = COPY $rdi
     %3:gr64 = COPY killed %2
     %5:gr32 = COPY killed %4
-    DBG_VALUE %5, $noreg, !9, !DIExpression(), debug-location !16
+    DBG_VALUE %5, $noreg, !9, !DIExpression(), $noreg, !DIExpression(), debug-location !16
     JMP_1 %bb.3
   
   bb.1.bb1:
-    DBG_VALUE %5, $noreg, !9, !DIExpression(), debug-location !16
+    DBG_VALUE %5, $noreg, !9, !DIExpression(), $noreg, !DIExpression(), debug-location !16
     JMP_1 %bb.4
   
   bb.2.bb2:
-    DBG_VALUE %6, $noreg, !14, !DIExpression(), debug-location !17
+    DBG_VALUE %6, $noreg, !14, !DIExpression(), $noreg, !DIExpression(), debug-location !17
     ADJCALLSTACKDOWN64 0, 0, 0, implicit-def $rsp, implicit-def $eflags, implicit-def $ssp, implicit $rsp, implicit $ssp, debug-location !19
     $edi = COPY %6, debug-location !19
     $al = MOV8ri 0, debug-location !19

@@ -76,9 +76,9 @@ body:             |
     liveins: $r1d, $r0l
   
     renamable $r1d = nsw AGHI killed renamable $r1d, -1, implicit-def dead $cc
-    DBG_VALUE $r1d, $noreg, !7, !DIExpression(), debug-location !9
+    DBG_VALUE $r1d, $noreg, !7, !DIExpression(), $noreg, !DIExpression(), debug-location !9
     CGHI renamable $r1d, 0, implicit-def $cc
-    DBG_VALUE $r1d, $noreg, !7, !DIExpression(), debug-location !9
+    DBG_VALUE $r1d, $noreg, !7, !DIExpression(), $noreg, !DIExpression(), debug-location !9
     BRC 14, 6, %bb.3, implicit $cc
     J %bb.1
 

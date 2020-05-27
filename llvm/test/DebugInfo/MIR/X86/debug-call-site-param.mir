@@ -151,9 +151,9 @@ body:             |
   bb.0.entry:
     liveins: $edi, $edx, $esi, $r15, $r14, $rbx
   
-    DBG_VALUE $edi, $noreg, !15, !DIExpression(), debug-location !19
-    DBG_VALUE $esi, $noreg, !16, !DIExpression(), debug-location !20
-    DBG_VALUE $edx, $noreg, !17, !DIExpression(), debug-location !21
+    DBG_VALUE $edi, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !19
+    DBG_VALUE $esi, $noreg, !16, !DIExpression(), $noreg, !DIExpression(), debug-location !20
+    DBG_VALUE $edx, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !21
     frame-setup PUSH64r killed $r15, implicit-def $rsp, implicit $rsp
     CFI_INSTRUCTION def_cfa_offset 16
     frame-setup PUSH64r killed $r14, implicit-def $rsp, implicit $rsp
@@ -168,16 +168,16 @@ body:             |
     $r14d = MOV32rr $edx, implicit-def $r14
     $ebx = MOV32rr $esi, implicit-def $rbx
     $r15d = MOV32rr $edi, implicit-def $r15
-    DBG_VALUE $r14d, $noreg, !17, !DIExpression(), debug-location !21
-    DBG_VALUE $ebx, $noreg, !16, !DIExpression(), debug-location !20
-    DBG_VALUE $r15d, $noreg, !15, !DIExpression(), debug-location !19
+    DBG_VALUE $r14d, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !21
+    DBG_VALUE $ebx, $noreg, !16, !DIExpression(), $noreg, !DIExpression(), debug-location !20
+    DBG_VALUE $r15d, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !19
     dead $eax = XOR32rr undef $eax, undef $eax, implicit-def dead $eflags, implicit-def $al, debug-location !23
     CALL64pcrel32 @getVal, csr_64, implicit $rsp, implicit $ssp, implicit $al, implicit-def $rsp, implicit-def $ssp, implicit-def $eax, debug-location !23
-    DBG_VALUE $eax, $noreg, !18, !DIExpression(), debug-location !24
+    DBG_VALUE $eax, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !24
     MOV32mr $rsp, 1, $noreg, 12, $noreg, killed renamable $eax, debug-location !24 :: (store 4 into %ir.local1)
     renamable $r8d = LEA64_32r killed renamable $r14, 1, $noreg, 3, $noreg, debug-location !24
     renamable $r9d = LEA64_32r killed renamable $r15, 1, renamable $rbx, 0, $noreg, debug-location !24
-    DBG_VALUE $rsp, $noreg, !18, !DIExpression(DW_OP_plus_uconst, 12, DW_OP_deref), debug-location !24
+    DBG_VALUE $rsp, $noreg, !18, !DIExpression(DW_OP_plus_uconst, 12, DW_OP_deref), $noreg, !DIExpression(), debug-location !24
     renamable $rdi = LEA64r $rsp, 1, $noreg, 12, $noreg
     $esi = MOV32rr $ebx, implicit killed $rbx, debug-location !24
     $edx = MOV32ri 10, debug-location !24

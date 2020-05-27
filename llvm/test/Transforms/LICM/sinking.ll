@@ -293,8 +293,8 @@ Out:
 ; turned into an "implicit location" using DW_OP_stack_value.
 ;
 ; DEBUGIFY-LABEL: @test11(
-; DEBUGIFY: call void @llvm.dbg.value(metadata %Ty* @X2, metadata {{.*}}, metadata !DIExpression())
-; DEBUGIFY: call void @llvm.dbg.value(metadata %Ty* @X2, metadata {{.*}}, metadata !DIExpression(DW_OP_plus_uconst, 4, DW_OP_stack_value))
+; DEBUGIFY: call void @llvm.dbg.value(metadata %Ty* @X2, metadata {{.*}}, metadata !DIExpression(), metadata i32* undef, metadata !DIExpression())
+; DEBUGIFY: call void @llvm.dbg.value(metadata %Ty* @X2, metadata {{.*}}, metadata !DIExpression(DW_OP_plus_uconst, 4, DW_OP_stack_value), metadata i32* undef, metadata !DIExpression())
 }
 
 @c = common global [1 x i32] zeroinitializer, align 4

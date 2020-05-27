@@ -141,8 +141,8 @@ critedge.loopexit:
 ; CHECK: br label %if.end3
 ; CHECK: if.end3:
 ; CHECK: %[[PREPHI:.*]] = phi i64 [ %sub.ptr.sub, %if.else ], [ %[[SUB]], %if.then2 ], [ %sub.ptr.sub, %entry ]
-; CHECK: call void @llvm.dbg.value(metadata i32* %p.0, metadata [[var_p0:![0-9]+]], metadata !DIExpression())
-; CHECK: call void @llvm.dbg.value(metadata i64 %sub.ptr.rhs.cast5.pre-phi, metadata [[var_sub_ptr:![0-9]+]], metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i32* %p.0, metadata [[var_p0:![0-9]+]], metadata !DIExpression(), metadata i32* undef, metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i64 %sub.ptr.rhs.cast5.pre-phi, metadata [[var_sub_ptr:![0-9]+]], metadata !DIExpression(), metadata i64 undef, metadata !DIExpression())
 ; CHECK: %[[DIV:.*]] = ashr exact i64 %[[PREPHI]], 2
 ; CHECK: ret i64 %[[DIV]]
 

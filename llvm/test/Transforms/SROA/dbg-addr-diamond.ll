@@ -45,19 +45,19 @@ if.end:                                           ; preds = %if.else, %if.then
 
 ; CHECK-LABEL: define void @if_else(i32 %cond, i32 %a, i32 %b)
 ; CHECK: entry:
-; CHECK:   call void @llvm.dbg.value(metadata i32 %a, metadata ![[PVAR:[0-9]+]], metadata ![[XFRAG:DIExpression\(DW_OP_LLVM_fragment, 0, 32\)]])
-; CHECK:   call void @llvm.dbg.value(metadata i32 %b, metadata ![[PVAR]], metadata ![[YFRAG:DIExpression\(DW_OP_LLVM_fragment, 32, 32\)]])
+; CHECK:   call void @llvm.dbg.value(metadata i32 %a, metadata ![[PVAR:[0-9]+]], metadata ![[XFRAG:DIExpression\(DW_OP_LLVM_fragment, 0, 32\)]], metadata i32 undef, metadata !DIExpression())
+; CHECK:   call void @llvm.dbg.value(metadata i32 %b, metadata ![[PVAR]], metadata ![[YFRAG:DIExpression\(DW_OP_LLVM_fragment, 32, 32\)]], metadata i32 undef, metadata !DIExpression())
 ; CHECK: if.then:
-; CHECK:   call void @llvm.dbg.value(metadata i32 0, metadata ![[PVAR]], metadata ![[XFRAG]])
-; CHECK:   call void @llvm.dbg.value(metadata i32 %a, metadata ![[PVAR]], metadata ![[YFRAG]])
+; CHECK:   call void @llvm.dbg.value(metadata i32 0, metadata ![[PVAR]], metadata ![[XFRAG]], metadata i32 undef, metadata !DIExpression())
+; CHECK:   call void @llvm.dbg.value(metadata i32 %a, metadata ![[PVAR]], metadata ![[YFRAG]], metadata i32 undef, metadata !DIExpression())
 ; CHECK: if.else:
-; CHECK:   call void @llvm.dbg.value(metadata i32 %b, metadata ![[PVAR]], metadata ![[XFRAG]])
-; CHECK:   call void @llvm.dbg.value(metadata i32 0, metadata ![[PVAR]], metadata ![[YFRAG]])
+; CHECK:   call void @llvm.dbg.value(metadata i32 %b, metadata ![[PVAR]], metadata ![[XFRAG]], metadata i32 undef, metadata !DIExpression())
+; CHECK:   call void @llvm.dbg.value(metadata i32 0, metadata ![[PVAR]], metadata ![[YFRAG]], metadata i32 undef, metadata !DIExpression())
 ; CHECK: if.end:
 ; CHECK:   %p.sroa.4.0 = phi i32 [ %a, %if.then ], [ 0, %if.else ]
 ; CHECK:   %p.sroa.0.0 = phi i32 [ 0, %if.then ], [ %b, %if.else ]
-; CHECK:   call void @llvm.dbg.value(metadata i32 %p.sroa.0.0, metadata ![[PVAR]], metadata ![[XFRAG]])
-; CHECK:   call void @llvm.dbg.value(metadata i32 %p.sroa.4.0, metadata ![[PVAR]], metadata ![[YFRAG]])
+; CHECK:   call void @llvm.dbg.value(metadata i32 %p.sroa.0.0, metadata ![[PVAR]], metadata ![[XFRAG]], metadata i32 undef, metadata !DIExpression())
+; CHECK:   call void @llvm.dbg.value(metadata i32 %p.sroa.4.0, metadata ![[PVAR]], metadata ![[YFRAG]], metadata i32 undef, metadata !DIExpression())
 
 ; CHECK: ![[PVAR]] = !DILocalVariable(name: "p", {{.*}})
 

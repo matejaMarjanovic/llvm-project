@@ -35,7 +35,7 @@ entry:
   %call.i.i = call i32 @"\01?x4@@YAHXZ"(), !dbg !46, !noalias !47
   %x3.i.i.i = bitcast %struct.B* %agg.tmp.ensured to i32*, !dbg !50
   store i32 0, i32* %x3.i.i.i, align 4, !dbg !50, !tbaa !57, !alias.scope !47
-  ; CHECK: call void @llvm.dbg.value(metadata i32 0, metadata ![[A:.*]], metadata !DIExpression())
+  ; CHECK: call void @llvm.dbg.value(metadata i32 0, metadata ![[A:.*]], metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
   ; CHECK: ![[A]] = !DILocalVariable(name: "a",
   ret void, !dbg !62
 }

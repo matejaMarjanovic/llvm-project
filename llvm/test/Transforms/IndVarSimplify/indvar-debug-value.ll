@@ -18,7 +18,7 @@
 ; CHECK: @main
 ; CHECK: llvm.dbg.value(metadata i32 1, metadata [[METADATA_IDX1:![0-9]+]]
 ; CHECK: %[[VAR_NAME:.*]] = add nuw nsw i64
-; CHECK: llvm.dbg.value(metadata i64 %[[VAR_NAME]], metadata [[METADATA_IDX1]], metadata !DIExpression())
+; CHECK: llvm.dbg.value(metadata i64 %[[VAR_NAME]], metadata [[METADATA_IDX1]], metadata !DIExpression(), metadata undef, metadata !DIExpression())
 ; CHECK: DICompileUnit
 ; CHECK: [[METADATA_IDX1]] = !DILocalVariable(name: "ArgIndex"
 

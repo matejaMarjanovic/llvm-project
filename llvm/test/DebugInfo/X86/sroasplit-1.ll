@@ -22,7 +22,7 @@
 ; Verify that SROA creates a variable piece when splitting i1.
 ; CHECK: %[[I1:.*]] = alloca [12 x i8], align 4
 ; CHECK: call void @llvm.dbg.declare(metadata [12 x i8]* %[[I1]], metadata ![[VAR:[0-9]+]], metadata !DIExpression(DW_OP_LLVM_fragment, 32, 96))
-; CHECK: call void @llvm.dbg.value(metadata i32 %[[A:.*]], metadata ![[VAR]], metadata !DIExpression(DW_OP_LLVM_fragment, 0, 32))
+; CHECK: call void @llvm.dbg.value(metadata i32 %[[A:.*]], metadata ![[VAR]], metadata !DIExpression(DW_OP_LLVM_fragment, 0, 32), metadata i32 undef, metadata !DIExpression())
 ; CHECK: ret i32 %[[A]]
 ; Read Var and Piece:
 ; CHECK: ![[VAR]] = !DILocalVariable(name: "i1",{{.*}} line: 11,

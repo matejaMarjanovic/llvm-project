@@ -30,14 +30,14 @@ if.end:                                           ; preds = %if.else, %if.then
 ; CHECK-LABEL: define i32 @if_else({{.*}})
 ; CHECK: entry:
 ; CHECK-NOT:   alloca i32
-; CHECK:   call void @llvm.dbg.value(metadata i32 %a, metadata ![[X_LOCAL:[0-9]+]], metadata !DIExpression())
+; CHECK:   call void @llvm.dbg.value(metadata i32 %a, metadata ![[X_LOCAL:[0-9]+]], metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK: if.then:                                          ; preds = %entry
-; CHECK:   call void @llvm.dbg.value(metadata i32 0, metadata ![[X_LOCAL]], metadata !DIExpression())
+; CHECK:   call void @llvm.dbg.value(metadata i32 0, metadata ![[X_LOCAL]], metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK: if.else:                                          ; preds = %entry
-; CHECK:   call void @llvm.dbg.value(metadata i32 %b, metadata ![[X_LOCAL]], metadata !DIExpression())
+; CHECK:   call void @llvm.dbg.value(metadata i32 %b, metadata ![[X_LOCAL]], metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK: if.end:                                           ; preds = %if.else, %if.then
 ; CHECK:   %[[PHI:[^ ]*]] = phi i32 [ 0, %if.then ], [ %b, %if.else ]
-; CHECK:   call void @llvm.dbg.value(metadata i32 %[[PHI]], metadata ![[X_LOCAL]], metadata !DIExpression())
+; CHECK:   call void @llvm.dbg.value(metadata i32 %[[PHI]], metadata ![[X_LOCAL]], metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK:   ret i32
 
 ; CHECK: ![[X_LOCAL]] = !DILocalVariable(name: "x", {{.*}})

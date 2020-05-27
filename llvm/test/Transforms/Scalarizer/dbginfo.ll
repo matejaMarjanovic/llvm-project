@@ -17,9 +17,9 @@ define void @f1(<4 x i32>* nocapture %a, <4 x i32>* nocapture readonly %b, <4 x 
 ; CHECK: %b.i1 = getelementptr i32, i32* %b.i0, i32 1
 ; CHECK: %b.i2 = getelementptr i32, i32* %b.i0, i32 2
 ; CHECK: %b.i3 = getelementptr i32, i32* %b.i0, i32 3
-; CHECK: tail call void @llvm.dbg.value(metadata <4 x i32>* %a, metadata !{{[0-9]+}}, metadata {{.*}}), !dbg !{{[0-9]+}}
-; CHECK: tail call void @llvm.dbg.value(metadata <4 x i32>* %b, metadata !{{[0-9]+}}, metadata {{.*}}), !dbg !{{[0-9]+}}
-; CHECK: tail call void @llvm.dbg.value(metadata <4 x i32>* %c, metadata !{{[0-9]+}}, metadata {{.*}}), !dbg !{{[0-9]+}}
+; CHECK: call void @llvm.dbg.value(metadata <4 x i32>* %a, metadata !{{[0-9]+}}, metadata {{.*}}, metadata undef, metadata !DIExpression()), !dbg !{{[0-9]+}}
+; CHECK: call void @llvm.dbg.value(metadata <4 x i32>* %b, metadata !{{[0-9]+}}, metadata {{.*}}, metadata undef, metadata !DIExpression()), !dbg !{{[0-9]+}}
+; CHECK: call void @llvm.dbg.value(metadata <4 x i32>* %c, metadata !{{[0-9]+}}, metadata {{.*}}, metadata undef, metadata !DIExpression()), !dbg !{{[0-9]+}}
 ; CHECK: %bval.i0 = load i32, i32* %b.i0, align 16, !dbg ![[TAG1:[0-9]+]], !tbaa ![[TAG2:[0-9]+]]
 ; CHECK: %bval.i1 = load i32, i32* %b.i1, align 4, !dbg ![[TAG1]], !tbaa ![[TAG2]]
 ; CHECK: %bval.i2 = load i32, i32* %b.i2, align 8, !dbg ![[TAG1]], !tbaa ![[TAG2]]

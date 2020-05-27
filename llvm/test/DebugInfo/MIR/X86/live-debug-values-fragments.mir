@@ -163,7 +163,7 @@ body:             |
     liveins: $ecx, $rdi
   
     $eax = MOV32rr killed $ecx, implicit-def $rax
-    DBG_VALUE $eax, $noreg, !3, !DIExpression(DW_OP_LLVM_fragment, 0, 32), debug-location !8
+    DBG_VALUE $eax, $noreg, !3, !DIExpression(DW_OP_LLVM_fragment, 0, 32), $noreg, !DIExpression(), debug-location !8
     JMP_1 %bb.2
   
   bb.2.bb2:
@@ -172,7 +172,7 @@ body:             |
   
     $ebx = MOV32rr $eax
     $ebx = ADD32ri8 $ebx, 3, implicit-def dead $eflags, implicit killed $rbx, implicit-def $rbx
-    DBG_VALUE $ebx, $noreg, !3, !DIExpression(DW_OP_LLVM_fragment, 32, 32), debug-location !8
+    DBG_VALUE $ebx, $noreg, !3, !DIExpression(DW_OP_LLVM_fragment, 32, 32), $noreg, !DIExpression(), debug-location !8
     JMP_1 %bb.3
 
   bb.3.bb3:
@@ -193,7 +193,7 @@ body:             |
     liveins: $rdi
   
     $ecx = XOR32rr undef $ecx, undef $ecx, implicit-def $eflags
-    DBG_VALUE $cx, $noreg, !43, !DIExpression(DW_OP_LLVM_fragment, 0, 16), debug-location !48
+    DBG_VALUE $cx, $noreg, !43, !DIExpression(DW_OP_LLVM_fragment, 0, 16), $noreg, !DIExpression(), debug-location !48
     JMP_1 %bb.1
   
   bb.1.bb1:
@@ -201,7 +201,7 @@ body:             |
     liveins: $ecx, $rdi
   
     $eax = MOV32rr killed $ecx, implicit-def $rax
-    DBG_VALUE $ax, $noreg, !43, !DIExpression(DW_OP_LLVM_fragment, 8, 16), debug-location !48
+    DBG_VALUE $ax, $noreg, !43, !DIExpression(DW_OP_LLVM_fragment, 8, 16), $noreg, !DIExpression(), debug-location !48
     JMP_1 %bb.2
   
   bb.2.bb2:
@@ -210,7 +210,7 @@ body:             |
   
     $ebx = MOV32rr $eax
     $ebx = ADD32ri8 $ebx, 3, implicit-def dead $eflags, implicit killed $rbx, implicit-def $rbx
-    DBG_VALUE $ebx, $noreg, !43, !DIExpression(DW_OP_LLVM_fragment, 32, 32), debug-location !48
+    DBG_VALUE $ebx, $noreg, !43, !DIExpression(DW_OP_LLVM_fragment, 32, 32), $noreg, !DIExpression(), debug-location !48
     JMP_1 %bb.3
 
   bb.3.bb3:
@@ -231,7 +231,7 @@ body:             |
     liveins: $rdi
   
     $ecx = XOR32rr undef $ecx, undef $ecx, implicit-def $eflags
-    DBG_VALUE $cx, $noreg, !83, !DIExpression(DW_OP_LLVM_fragment, 0, 16), debug-location !88
+    DBG_VALUE $cx, $noreg, !83, !DIExpression(DW_OP_LLVM_fragment, 0, 16), $noreg, !DIExpression(), debug-location !88
     JMP_1 %bb.1
   
   bb.1.bb1:
@@ -239,7 +239,7 @@ body:             |
     liveins: $ecx, $rdi
   
     $eax = MOV32rr killed $ecx, implicit-def $rax
-    DBG_VALUE $rdi, $noreg, !83, !DIExpression(), debug-location !88
+    DBG_VALUE $rdi, $noreg, !83, !DIExpression(), $noreg, !DIExpression(), debug-location !88
     JMP_1 %bb.2
   
   bb.2.bb2:
@@ -248,7 +248,7 @@ body:             |
   
     $ebx = MOV32rr $eax
     $ebx = ADD32ri8 $ebx, 3, implicit-def dead $eflags, implicit killed $rbx, implicit-def $rbx
-    DBG_VALUE $ebx, $noreg, !83, !DIExpression(DW_OP_LLVM_fragment, 32, 32), debug-location !88
+    DBG_VALUE $ebx, $noreg, !83, !DIExpression(DW_OP_LLVM_fragment, 32, 32), $noreg, !DIExpression(), debug-location !88
     JMP_1 %bb.3
 
   bb.3.bb3:

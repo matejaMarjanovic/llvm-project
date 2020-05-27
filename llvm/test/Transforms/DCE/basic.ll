@@ -4,9 +4,9 @@
 ; CHECK-LABEL: @test
 define void @test() {
   %add = add i32 1, 2
-; CHECK-NEXT: call void @llvm.dbg.value(metadata i32 1, metadata [[add:![0-9]+]], metadata !DIExpression(DW_OP_plus_uconst, 2, DW_OP_stack_value))
+; CHECK-NEXT: call void @llvm.dbg.value(metadata i32 2, metadata [[add:![0-9]+]], metadata !DIExpression(DW_OP_plus_uconst, 2, DW_OP_stack_value), metadata i32 undef, metadata !DIExpression())
   %sub = sub i32 %add, 1
-; CHECK-NEXT: call void @llvm.dbg.value(metadata i32 1, metadata [[sub:![0-9]+]], metadata !DIExpression(DW_OP_plus_uconst, 2, DW_OP_constu, 1, DW_OP_minus, DW_OP_stack_value))
+; CHECK-NEXT: call void @llvm.dbg.value(metadata i32 2, metadata [[sub:![0-9]+]], metadata !DIExpression(DW_OP_plus_uconst, 2, DW_OP_constu, 1, DW_OP_minus, DW_OP_stack_value), metadata i32 undef, metadata !DIExpression())
 ; CHECK-NEXT: ret void
   ret void
 }

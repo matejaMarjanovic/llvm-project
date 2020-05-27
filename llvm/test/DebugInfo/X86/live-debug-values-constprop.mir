@@ -140,7 +140,7 @@ body:             |
     liveins: $ecx, $rdi
   
     $eax = MOV32rr killed $ecx, implicit-def $rax
-    DBG_VALUE $eax, $noreg, !3, !DIExpression(), debug-location !8
+    DBG_VALUE $eax, $noreg, !3, !DIExpression(), $noreg, !DIExpression(), debug-location !8
     JMP_1 %bb.3
   
   bb.2.bb2:
@@ -148,7 +148,7 @@ body:             |
     liveins: $rax
   
     $eax = ADD32ri8 $eax, 3, implicit-def dead $eflags, implicit killed $rax, implicit-def $rax
-    DBG_VALUE $eax, $noreg, !3, !DIExpression(), debug-location !8
+    DBG_VALUE $eax, $noreg, !3, !DIExpression(), $noreg, !DIExpression(), debug-location !8
     JMP_1 %bb.3
 
   bb.3.bb3:
@@ -204,7 +204,7 @@ body:             |
     liveins: $ecx, $rdi
   
     $eax = MOV32rr killed $ecx, implicit-def $rax
-    DBG_VALUE 0, $noreg, !41, !DIExpression(), debug-location !42
+    DBG_VALUE 0, $noreg, !41, !DIExpression(), $noreg, !DIExpression(), debug-location !42
     JMP_1 %bb.3
   
   bb.2.bb2:
@@ -212,7 +212,7 @@ body:             |
     liveins: $rax
   
     $eax = ADD32ri8 $eax, 3, implicit-def dead $eflags, implicit killed $rax, implicit-def $rax
-    DBG_VALUE $eax, $noreg, !41, !DIExpression(), debug-location !42
+    DBG_VALUE $eax, $noreg, !41, !DIExpression(), $noreg, !DIExpression(), debug-location !42
     JMP_1 %bb.3
 
   bb.3.bb3:
@@ -268,7 +268,7 @@ body:             |
     liveins: $ecx, $rdi
   
     $eax = MOV32rr killed $ecx, implicit-def $rax
-    DBG_VALUE $eax, $noreg, !81, !DIExpression(), debug-location !82
+    DBG_VALUE $eax, $noreg, !81, !DIExpression(), $noreg, !DIExpression(), debug-location !82
     JMP_1 %bb.3
   
   bb.2.bb2:
@@ -276,7 +276,7 @@ body:             |
     liveins: $rax
   
     $eax = ADD32ri8 $eax, 3, implicit-def dead $eflags, implicit killed $rax, implicit-def $rax
-    DBG_VALUE 0, $noreg, !81, !DIExpression(), debug-location !82
+    DBG_VALUE 0, $noreg, !81, !DIExpression(), $noreg, !DIExpression(), debug-location !82
     JMP_1 %bb.3
 
   bb.3.bb3:
@@ -329,7 +329,7 @@ body:             |
     liveins: $ecx, $rdi
   
     $eax = MOV32rr killed $ecx, implicit-def $rax
-    DBG_VALUE 0, $noreg, !121, !DIExpression(), debug-location !122
+    DBG_VALUE 0, $noreg, !121, !DIExpression(), $noreg, !DIExpression(), debug-location !122
     JMP_1 %bb.3
   
   bb.2.bb2:
@@ -337,7 +337,7 @@ body:             |
     liveins: $rax
   
     $eax = ADD32ri8 $eax, 3, implicit-def dead $eflags, implicit killed $rax, implicit-def $rax
-    DBG_VALUE 0, $noreg, !121, !DIExpression(), debug-location !122
+    DBG_VALUE 0, $noreg, !121, !DIExpression(), $noreg, !DIExpression(), debug-location !122
     JMP_1 %bb.3
 
   bb.3.bb3:

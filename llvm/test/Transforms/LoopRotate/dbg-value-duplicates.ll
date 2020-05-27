@@ -11,8 +11,8 @@ entry:
   call void @llvm.dbg.value(metadata i64 %n, metadata !16, metadata !DIExpression()), !dbg !21
   call void @llvm.dbg.value(metadata i64 %s, metadata !17, metadata !DIExpression()), !dbg !22
   call void @llvm.dbg.value(metadata i64 0, metadata !18, metadata !DIExpression()), !dbg !23
-  ; CHECK:   call void @llvm.dbg.value(metadata i64 0, metadata !18, metadata !DIExpression()), !dbg !23
-  ; CHECK-NOT:   call void @llvm.dbg.value(metadata i64 0, metadata !18, metadata !DIExpression()), !dbg !23
+  ; CHECK:   call void @llvm.dbg.value(metadata i64 0, metadata !18, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !23
+  ; CHECK-NOT:   call void @llvm.dbg.value(metadata i64 0, metadata !18, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !23
   br label %for.cond, !dbg !24
 
 for.cond:                                         ; preds = %for.body, %entry
@@ -31,8 +31,8 @@ for.body:                                         ; preds = %for.cond
   call void @bar(float %0), !dbg !34
   %add = add nsw i64 %i.0, %s, !dbg !35
   call void @llvm.dbg.value(metadata i64 %add, metadata !18, metadata !DIExpression()), !dbg !23
-  ; CHECK:   call void @llvm.dbg.value(metadata i64 %add, metadata !18, metadata !DIExpression()), !dbg !23
-  ; CHECK-NOT:   call void @llvm.dbg.value(metadata i64 %add, metadata !18, metadata !DIExpression()), !dbg !23
+  ; CHECK:   call void @llvm.dbg.value(metadata i64 %add, metadata !18, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !23
+  ; CHECK-NOT:   call void @llvm.dbg.value(metadata i64 %add, metadata !18, metadata !DIExpression(), metadata undef, metadata !DIExpression()), !dbg !23
   br label %for.cond, !dbg !36, !llvm.loop !37
 }
 

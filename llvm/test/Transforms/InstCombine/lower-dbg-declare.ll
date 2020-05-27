@@ -28,14 +28,14 @@ entry:
   store i32 0, i32* %retval, align 4
   %0 = bitcast i32* %d1 to i8*, !dbg !17
   call void @llvm.lifetime.start.p0i8(i64 4, i8* %0) #4, !dbg !17
-; CHECK: dbg.value(metadata i32 42, metadata [[METADATA_IDX1:![0-9]+]], metadata !DIExpression())
+; CHECK: dbg.value(metadata i32 42, metadata [[METADATA_IDX1:![0-9]+]], metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK-NEXT: store
   call void @llvm.dbg.declare(metadata i32* %d1, metadata !16, metadata !DIExpression()), !dbg !17
   store i32 42, i32* %d1, align 4, !dbg !17
   br label %while.cond, !dbg !22
 
 while.cond:                                       ; preds = %while.body, %entry
-; CHECK: dbg.value(metadata i32 %1, metadata [[METADATA_IDX1]], metadata !DIExpression())
+; CHECK: dbg.value(metadata i32 %1, metadata [[METADATA_IDX1]], metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK-NEXT: call zeroext i1 @_ZL5emptyi
   %1 = load i32, i32* %d1, align 4, !dbg !22
   %call = call zeroext i1 @_ZL5emptyi(i32 %1), !dbg !22
@@ -43,7 +43,7 @@ while.cond:                                       ; preds = %while.body, %entry
   br i1 %lnot, label %while.body, label %while.end, !dbg !22
 
 while.body:                                       ; preds = %while.cond
-; CHECK: dbg.value(metadata i32* %d1, metadata [[METADATA_IDX1]], metadata !DIExpression(DW_OP_deref))
+; CHECK: dbg.value(metadata i32* %d1, metadata [[METADATA_IDX1]], metadata !DIExpression(DW_OP_deref), metadata i32* undef, metadata !DIExpression())
 ; CHECK-NEXT: call void @_ZL6escapeRi
   call void @_ZL6escapeRi(i32* dereferenceable(4) %d1), !dbg !23
   br label %while.cond, !dbg !22, !llvm.loop !24

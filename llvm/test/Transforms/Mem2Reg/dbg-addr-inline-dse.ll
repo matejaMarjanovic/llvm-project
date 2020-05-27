@@ -49,14 +49,14 @@ entry:
 }
 
 ; CHECK-LABEL: define void @f(i32 %x)
-; CHECK: call void @llvm.dbg.value(metadata i32 %x, metadata !13, metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i32 %x, metadata !13, metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK: %inc.1 = add nsw i32 %x, 1
-; CHECK: call void @llvm.dbg.value(metadata i32 %inc.1, metadata !13, metadata !DIExpression())
-; CHECK: call void @llvm.dbg.value(metadata i32 1, metadata !13, metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i32 %inc.1, metadata !13, metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i32 1, metadata !13, metadata !DIExpression(), metadata undef, metadata !DIExpression())
 ; CHECK: store i32 1, i32* @global, align 4
-; CHECK: call void @llvm.dbg.value(metadata i32 2, metadata !13, metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i32 2, metadata !13, metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK: %inc.2 = add nsw i32 2, 1
-; CHECK: call void @llvm.dbg.value(metadata i32 %inc.2, metadata !13, metadata !DIExpression())
+; CHECK: call void @llvm.dbg.value(metadata i32 %inc.2, metadata !13, metadata !DIExpression(), metadata i32 undef, metadata !DIExpression())
 ; CHECK: ret void
 
 attributes #0 = { nounwind uwtable }

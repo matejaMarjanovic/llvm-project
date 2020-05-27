@@ -17,19 +17,19 @@ entry:
   %1 = bitcast i32* %x2 to i8*, !dbg !14
 
 ; Unhandled dbg.value: expression does not start with OP_DW_deref
-; CHECK: call void @llvm.dbg.value(metadata ![[EMPTY:.*]], metadata !{{.*}}, metadata !{{.*}})
+; CHECK: call void @llvm.dbg.value(metadata ![[EMPTY:.*]], metadata !{{.*}}, metadata !{{.*}}, metadata undef, metadata !DIExpression())
   tail call void @llvm.dbg.value(metadata i32* %x1, metadata !10, metadata !23), !dbg !16
 
 ; Unhandled dbg.value: expression does not start with OP_DW_deref
-; CHECK: call void @llvm.dbg.value(metadata ![[EMPTY]], metadata !{{.*}}, metadata !{{.*}})
+; CHECK: call void @llvm.dbg.value(metadata ![[EMPTY]], metadata !{{.*}}, metadata !{{.*}}, metadata undef, metadata !DIExpression())
   tail call void @llvm.dbg.value(metadata i32* %x1, metadata !10, metadata !24), !dbg !16
 
 ; Supported dbg.value: rewritted based on the [[USP]] value.
-; CHECK: call void @llvm.dbg.value(metadata i8* %[[USP]], metadata ![[X1:.*]], metadata !DIExpression(DW_OP_constu, 4, DW_OP_minus, DW_OP_deref, DW_OP_LLVM_fragment, 0, 4))
+; CHECK: call void @llvm.dbg.value(metadata i8* %[[USP]], metadata ![[X1:.*]], metadata !DIExpression(DW_OP_constu, 4, DW_OP_minus, DW_OP_deref, DW_OP_LLVM_fragment, 0, 4), metadata i8* undef, metadata !DIExpression())
   tail call void @llvm.dbg.value(metadata i32* %x1, metadata !10, metadata !25), !dbg !16
 
 ; Supported dbg.value: rewritted based on the [[USP]] value.
-; CHECK: call void @llvm.dbg.value(metadata i8* %[[USP]], metadata ![[X1:.*]], metadata !DIExpression(DW_OP_constu, 4, DW_OP_minus, DW_OP_deref))
+; CHECK: call void @llvm.dbg.value(metadata i8* %[[USP]], metadata ![[X1:.*]], metadata !DIExpression(DW_OP_constu, 4, DW_OP_minus, DW_OP_deref), metadata i8* undef, metadata !DIExpression())
   tail call void @llvm.dbg.value(metadata i32* %x1, metadata !10, metadata !15), !dbg !16
   call void @capture(i32* nonnull %x1), !dbg !17
 
@@ -37,7 +37,7 @@ entry:
 ; CHECK: call void @llvm.random.metadata.use(metadata ![[EMPTY]])
   call void @llvm.random.metadata.use(metadata i32* %x2)
 
-; CHECK: call void @llvm.dbg.value(metadata i8* %[[USP]], metadata ![[X2:.*]], metadata !DIExpression(DW_OP_constu, 8, DW_OP_minus, DW_OP_deref))
+; CHECK: call void @llvm.dbg.value(metadata i8* %[[USP]], metadata ![[X2:.*]], metadata !DIExpression(DW_OP_constu, 8, DW_OP_minus, DW_OP_deref), metadata i8* undef, metadata !DIExpression())
   call void @llvm.dbg.value(metadata i32* %x2, metadata !12, metadata !15), !dbg !18
   call void @capture(i32* nonnull %x2), !dbg !19
   ret void, !dbg !20

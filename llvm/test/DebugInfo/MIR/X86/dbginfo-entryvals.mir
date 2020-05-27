@@ -14,8 +14,8 @@
 #  fn2 (a);
 #  u --;
 #}
-# CHECK: DBG_VALUE $edi, $noreg, !14, !DIExpression(DW_OP_LLVM_entry_value, 1), debug-location {{.*}}
-# CHECK: DBG_VALUE $esi, $noreg, !15, !DIExpression(DW_OP_LLVM_entry_value, 1), debug-location {{.*}}
+# CHECK: DBG_VALUE $edi, $noreg, !14, !DIExpression(DW_OP_LLVM_entry_value, 1), $noreg, !DIExpression(), debug-location {{.*}}
+# CHECK: DBG_VALUE $esi, $noreg, !15, !DIExpression(DW_OP_LLVM_entry_value, 1), $noreg, !DIExpression(), debug-location {{.*}}
 
 --- |
   ; ModuleID = 'test.c'
@@ -70,9 +70,9 @@ tracksRegLiveness: true
 liveins:         []
 body:             |
   bb.0.entry:
-    DBG_VALUE $edi, $noreg, !14, !DIExpression(), debug-location !18
-    DBG_VALUE $esi, $noreg, !15, !DIExpression(), debug-location !18
-    DBG_VALUE 7, $noreg, !17, !DIExpression(), debug-location !18
+    DBG_VALUE $edi, $noreg, !14, !DIExpression(), $noreg, !DIExpression(), debug-location !18
+    DBG_VALUE $esi, $noreg, !15, !DIExpression(), $noreg, !DIExpression(), debug-location !18
+    DBG_VALUE 7, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !18
     $edi = MOV32ri 7, debug-location !18
     TAILJMPd64 @fn2, csr_64, implicit $rsp, implicit $ssp, implicit $rsp, implicit $ssp, implicit killed $edi, debug-location !18
 

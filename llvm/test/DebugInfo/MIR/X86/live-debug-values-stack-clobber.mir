@@ -140,10 +140,10 @@ body:             |
     successors: %bb.4, %bb.1
     liveins: $rdi, $rsi, $rbp, $r15, $r14, $r13, $r12, $rbx
   
-    DBG_VALUE $rdi, $noreg, !17, !DIExpression(), debug-location !28
-    DBG_VALUE $rdi, $noreg, !17, !DIExpression(), debug-location !28
-    DBG_VALUE $rsi, $noreg, !18, !DIExpression(), debug-location !28
-    DBG_VALUE $rsi, $noreg, !18, !DIExpression(), debug-location !28
+    DBG_VALUE $rdi, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !28
+    DBG_VALUE $rdi, $noreg, !17, !DIExpression(), $noreg, !DIExpression(), debug-location !28
+    DBG_VALUE $rsi, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !28
+    DBG_VALUE $rsi, $noreg, !18, !DIExpression(), $noreg, !DIExpression(), debug-location !28
     frame-setup PUSH64r killed $rbp, implicit-def $rsp, implicit $rsp, debug-location !28
     frame-setup PUSH64r killed $r15, implicit-def $rsp, implicit $rsp, debug-location !28
     frame-setup PUSH64r killed $r14, implicit-def $rsp, implicit $rsp, debug-location !28
