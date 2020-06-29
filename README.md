@@ -1,109 +1,186 @@
-# The LLVM Compiler Infrastructure
 
-This directory and its subdirectories contain source code for LLVM,
-a toolkit for the construction of highly optimized compilers,
-optimizers, and runtime environments.
+# [PROPOSAL] LLVM Add two new arguments for debug values
 
-The README briefly describes how to get started with building LLVM.
-For more information on how to contribute to the LLVM project, please
-take a look at the
-[Contributing to LLVM](https://llvm.org/docs/Contributing.html) guide.
+### Description
 
-## Getting Started with the LLVM System
+Intrinsics like llvm.dbg.value and llvm.dbg.declare have three
+arguments: variable info (file and line in which it was declared,
+variable name, etc.), register who holds the value which combined
+with DIExpression gives us the value of the variable that is being
+described and the DIExpression which holds DWARF operaions that are
+used to calculate the value of the variable.
 
-Taken from https://llvm.org/docs/GettingStarted.html.
+Without optimizations one llvm.dbg.value intrinsic call would describe
+one variable (DIExpression would be empty).
+With optimizations some variables are being optimized out and they
+wouldn't exist during the execution of the program. If we run
+the program in a debugger and would like to read the values of the
+variables, in some cases that wouldn't be possible.
 
-### Overview
+When we salvage an instruction which has a register and a constant as
+it's operands, the register in the llvm.dbg.value intrinsic call will
+become the register that is the operand in the instruction, and the
+appropriate DWARF operations will be added in DIExpression.
 
-Welcome to the LLVM project!
+### The problem
 
-The LLVM project has multiple components. The core of the project is
-itself called "LLVM". This contains all of the tools, libraries, and header
-files needed to process intermediate representations and converts it into
-object files.  Tools include an assembler, disassembler, bitcode analyzer, and
-bitcode optimizer.  It also contains basic regression tests.
+The problem arises when we try to salvage an instruction with two virtual
+registers as it's operands, beacuse there is no DWARF operation that
+represents a register, like there is that represents a constant. And not
+only that, even if there was a DWARF operation like that, we wouldn't know
+which register should we represent as the register from the instruction is
+still virtual and we don't know in which physical register will it be mapped.
 
-C-like languages use the [Clang](http://clang.llvm.org/) front end.  This
-component compiles C, C++, Objective C, and Objective C++ code into LLVM bitcode
--- and from there into object files, using LLVM.
 
-Other components include:
-the [libc++ C++ standard library](https://libcxx.llvm.org),
-the [LLD linker](https://lld.llvm.org), and more.
+### The solution
 
-### Getting the Source Code and Building LLVM
+Add another operand in llvm.dbg.value intrinsic call. That operand will be a
+register that holds the value of the second register in case of a binary
+instruction that has only registers as it's operands.
+It will have undef value by default.
 
-The LLVM Getting Started documentation may be out of date.  The [Clang
-Getting Started](http://clang.llvm.org/get_started.html) page might have more
-accurate information.
+Now that we have an extra register in llvm.dbg.value intrinsic call we should
+examine the behaviour if we try to salvage the instruction of the first register.
+If the instruction has a register and a constant as it's register it will behave
+as before, replacing the current register (the first) with a new register, and
+adding DWARF operaions to the DIExpression, without changing the second register
+in llvm.dbg.value.
+If the instruction has two registers, it will cause undefined behaviour.
 
-This is an example workflow and configuration to get and build the LLVM source:
+But what if we salvage the instruction of the second register in llvm.dbg.value?
+Will we add DWARF operaions in the DIExpression like in the previous case?
+How will the compiler know on which register to apply which DWARF operations
+from the DIExpression?
 
-1. Checkout LLVM (including related subprojects like Clang):
+The solution to that problem is adding another DIExpression, which is initially
+empty (DIExpression()).
+When we salvage the second register, the appropriate DWARF operaions will be pushed
+to the second DIExpression, so we could calculate the values separetely.
 
-     * ``git clone https://github.com/llvm/llvm-project.git``
+Besides the DWARF operations that we would push to the DIExpression, in case
+of an instruction with two registers as it's operands, we would also push another
+new LLVM internal DWARF operation DW_OP_reg_* (plus, minus, mul, div, etc.) which
+will in the ASM printer be translated to a standard DWARF operation consisting of
+the value of the first DIExrpression and the value of the second DIExpression.
 
-     * Or, on windows, ``git clone --config core.autocrlf=false
-    https://github.com/llvm/llvm-project.git``
+### Example
 
-2. Configure and build LLVM and Clang:
+```
+int main (int argc, char** argv) {
+    char c1 = argc + 1;
+    char c2 = argc - 1;
+    char c3 = c1 + c2;
+    char c4 = c1 + c2;
+    char c5 = c4 * 4;
 
-     * ``cd llvm-project``
+    if (argc % 2)
+        printf("Value = %d\n", c3);
+    else
+        printf("Value = %d\n", c5);
 
-     * ``mkdir build``
+    return 0;
+}
+```
 
-     * ``cd build``
+The following command line will generate an .ll file with llvm.dbg.value intrinsic
+which has three arguments and because of that the debugger won't be able to read
+the values of the variables when they are still live:
 
-     * ``cmake -G <generator> [options] ../llvm``
+`$ ./build-clean/bin/clang -g -O2 test.c -emit-llvm -S -o test-clean.ll`
 
-        Some common generators are:
+```
+define dso_local i32 @main(i32 %argc, i8** nocapture readnone %argv) local_unnamed_addr #0 !dbg !7 {
+entry:
+  call void @llvm.dbg.value(metadata i32 %argc, metadata !15, metadata !DIExpression()), !dbg !22
+  call void @llvm.dbg.value(metadata i8** %argv, metadata !16, metadata !DIExpression()), !dbg !22
+  call void @llvm.dbg.value(metadata i8 undef, metadata !17, metadata !DIExpression(DW_OP_plus_uconst, 1, DW_OP_stack_value)), !dbg !22
+  call void @llvm.dbg.value(metadata i8 undef, metadata !18, metadata !DIExpression(DW_OP_constu, 1, DW_OP_minus, DW_OP_stack_value)), !dbg !22
+  call void @llvm.dbg.value(metadata i8 undef, metadata !19, metadata !DIExpression()), !dbg !22
+  call void @llvm.dbg.value(metadata i8 undef, metadata !20, metadata !DIExpression()), !dbg !22
+  call void @llvm.dbg.value(metadata i8 undef, metadata !21, metadata !DIExpression()), !dbg !22
+  %0 = and i32 %argc, 1, !dbg !23
+  %tobool = icmp eq i32 %0, 0, !dbg !23
+  %.sink = select i1 %tobool, i32 27, i32 25, !dbg !25
+  %sext22 = shl i32 %argc, %.sink, !dbg !22
+  %conv13 = ashr exact i32 %sext22, 24, !dbg !22
+  %call14 = tail call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([12 x i8], [12 x i8]* @.str, i64 0, i64 0), i32 %conv13), !dbg !26
+  ret i32 0, !dbg !27
+}
+```
 
-        * ``Ninja`` --- for generating [Ninja](https://ninja-build.org)
-          build files. Most llvm developers use Ninja.
-        * ``Unix Makefiles`` --- for generating make-compatible parallel makefiles.
-        * ``Visual Studio`` --- for generating Visual Studio projects and
-          solutions.
-        * ``Xcode`` --- for generating Xcode projects.
+If we compile it and then run gdb on the generated executable file
+we will get the following:
 
-        Some Common options:
+`./build-clean/bin/clang -g -O2 test.c -o test-clean`
+```
+gdb --args test-clean 3 4 5 6
+...
+(gdb) b 9
+Breakpoint 1 at 0x400513: file test.c, line 9.
+(gdb) r
+Starting program: /home/rtrk/llvm/test/test-clean 3 4 5 6
 
-        * ``-DLLVM_ENABLE_PROJECTS='...'`` --- semicolon-separated list of the LLVM
-          subprojects you'd like to additionally build. Can include any of: clang,
-          clang-tools-extra, libcxx, libcxxabi, libunwind, lldb, compiler-rt, lld,
-          polly, or debuginfo-tests.
+Breakpoint 1, main (argc=5, argv=<optimized out>) at test.c:10
+10	    if (argc % 2)
+(gdb) p c1
+$1 = <optimized out>
+(gdb) p c2
+$2 = <optimized out>
+(gdb) p c3
+$3 = <optimized out>
+(gdb) p c4
+$4 = <optimized out>
+(gdb) p c5
+$5 = <optimized out>
+(gdb) p argc
+$6 = 5
+```
 
-          For example, to build LLVM, Clang, libcxx, and libcxxabi, use
-          ``-DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi"``.
+In the case of llvm.dbg.value with five arguments the outcome will be
+different:
+`$ ./build-dev/bin/clang -g -O2 test.c -emit-llvm -S -o test-dev.ll`
 
-        * ``-DCMAKE_INSTALL_PREFIX=directory`` --- Specify for *directory* the full
-          pathname of where you want the LLVM tools and libraries to be installed
-          (default ``/usr/local``).
+```
+define dso_local i32 @main(i32 %argc, i8** nocapture readnone %argv) local_unnamed_addr #0 !dbg !7 {
+entry:
+  call void @llvm.dbg.value(metadata i32 %argc, metadata !15, metadata !DIExpression(), metadata i32 undef, metadata !DIExpression()), !dbg !22
+  call void @llvm.dbg.value(metadata i8** %argv, metadata !16, metadata !DIExpression(), metadata i8** undef, metadata !DIExpression()), !dbg !22
+  call void @llvm.dbg.value(metadata i32 %argc, metadata !17, metadata !DIExpression(DW_OP_LLVM_convert, 8, DW_ATE_signed, DW_OP_LLVM_convert, 32, DW_ATE_signed, DW_OP_plus_uconst, 1, DW_OP_stack_value), metadata i8 undef, metadata !DIExpression()), !dbg !22
+  call void @llvm.dbg.value(metadata i32 %argc, metadata !18, metadata !DIExpression(DW_OP_LLVM_convert, 8, DW_ATE_signed, DW_OP_LLVM_convert, 32, DW_ATE_signed, DW_OP_constu, 1, DW_OP_minus, DW_OP_stack_value), metadata i8 undef, metadata !DIExpression()), !dbg !22
+  call void @llvm.dbg.value(metadata i32 %argc, metadata !19, metadata !DIExpression(DW_OP_constu, 24, DW_OP_shl, DW_OP_plus_uconst, 16777216, DW_OP_constu, 24, DW_OP_shr, DW_OP_LLVM_reg_plus, DW_OP_LLVM_convert, 8, DW_ATE_signed, DW_OP_LLVM_convert, 32, DW_ATE_signed, DW_OP_stack_value), metadata i32 %argc, metadata !DIExpression(DW_OP_constu, 24, DW_OP_shl, DW_OP_constu, 16777216, DW_OP_minus, DW_OP_constu, 24, DW_OP_shr)), !dbg !22
+  call void @llvm.dbg.value(metadata i32 %argc, metadata !20, metadata !DIExpression(DW_OP_constu, 24, DW_OP_shl, DW_OP_plus_uconst, 16777216, DW_OP_constu, 24, DW_OP_shr, DW_OP_LLVM_reg_plus, DW_OP_LLVM_convert, 8, DW_ATE_signed, DW_OP_LLVM_convert, 32, DW_ATE_signed, DW_OP_stack_value), metadata i32 %argc, metadata !DIExpression(DW_OP_constu, 24, DW_OP_shl, DW_OP_constu, 16777216, DW_OP_minus, DW_OP_constu, 24, DW_OP_shr)), !dbg !22
+  call void @llvm.dbg.value(metadata i32 %argc, metadata !21, metadata !DIExpression(DW_OP_constu, 25, DW_OP_shl, DW_OP_constu, 22, DW_OP_shra, DW_OP_LLVM_convert, 8, DW_ATE_signed, DW_OP_LLVM_convert, 32, DW_ATE_signed, DW_OP_stack_value), metadata i8 undef, metadata !DIExpression()), !dbg !22
+  %0 = and i32 %argc, 1, !dbg !23
+  %tobool = icmp eq i32 %0, 0, !dbg !23
+  %.sink = select i1 %tobool, i32 27, i32 25, !dbg !25
+  %sext22 = shl i32 %argc, %.sink, !dbg !22
+  %conv13 = ashr exact i32 %sext22, 24, !dbg !22
+  %call14 = tail call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([12 x i8], [12 x i8]* @.str, i64 0, i64 0), i32 %conv13), !dbg !26
+  ret i32 0, !dbg !27
+}
+```
 
-        * ``-DCMAKE_BUILD_TYPE=type`` --- Valid options for *type* are Debug,
-          Release, RelWithDebInfo, and MinSizeRel. Default is Debug.
+`../build-dev/bin/clang -g -O2 test.c -o test-dev`
+```
+gdb --args test-dev 3 4 5 6
+...
+(gdb) b 9
+Breakpoint 1 at 0x400513: file test.c, line 9.
+(gdb) r
+Starting program: /home/rtrk/llvm/test/test-dev 3 4 5 6
 
-        * ``-DLLVM_ENABLE_ASSERTIONS=On`` --- Compile with assertion checks enabled
-          (default is Yes for Debug builds, No for all other build types).
-
-      * Run your build tool of choice!
-
-        * The default target (i.e. ``ninja`` or ``make``) will build all of LLVM.
-
-        * The ``check-all`` target (i.e. ``ninja check-all``) will run the
-          regression tests to ensure everything is in working order.
-
-        * CMake will generate build targets for each tool and library, and most
-          LLVM sub-projects generate their own ``check-<project>`` target.
-
-        * Running a serial build will be *slow*.  To improve speed, try running a
-          parallel build. That's done by default in Ninja; for ``make``, use
-          ``make -j NNN`` (NNN is the number of parallel jobs, use e.g. number of
-          CPUs you have.)
-
-      * For more information see [CMake](https://llvm.org/docs/CMake.html)
-
-Consult the
-[Getting Started with LLVM](https://llvm.org/docs/GettingStarted.html#getting-started-with-llvm)
-page for detailed information on configuring and compiling LLVM. You can visit
-[Directory Layout](https://llvm.org/docs/GettingStarted.html#directory-layout)
-to learn about the layout of the source code tree.
+Breakpoint 1, main (argc=5, argv=<optimized out>) at test.c:10
+10	    if (argc % 2)
+(gdb) p c1
+$1 = 6 '\006'
+(gdb) p c2
+$2 = 4 '\004'
+(gdb) p c3
+$3 = 10 '\n'
+(gdb) p c4
+$4 = 10 '\n'
+(gdb) p c5
+$5 = 40 '('
+(gdb) p argc
+$6 = 5
+```
