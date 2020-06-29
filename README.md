@@ -1,5 +1,5 @@
 
-# [PROPOSAL] LLVM Add two new arguments for debug values
+# [PROPOSAL] [Salvage Debug Info] Support IR instructions with two SSA values
 
 ### Description
 
