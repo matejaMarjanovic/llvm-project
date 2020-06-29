@@ -190,6 +190,6 @@ $6 = 5
 
 ### Concern
 
-When compiling R600MCCodeEmitter.cpp the memory gets filled due to too
-many generated llvm.dbg.value intrinsic calls.
+When compiling ./llvm/lib/Target/AMDGPU/MCTargetDesc/R600MCCodeEmitter.cpp the memory
+gets filled due to too many generated llvm.dbg.value intrinsic calls.
 The fix limits the number of DbgUsers and DbgValues to 50.
