@@ -111,9 +111,9 @@ entry:
 If we compile it and then run gdb on the generated executable file
 we will get the following:
 
-`./build-clean/bin/clang -g -O2 test.c -o test-clean`
+`$ ./build-clean/bin/clang -g -O2 test.c -o test-clean`
 ```
-gdb --args test-clean 3 4 5 6
+$ gdb --args test-clean 3 4 5 6
 ...
 (gdb) b 9
 Breakpoint 1 at 0x400513: file test.c, line 9.
@@ -160,9 +160,9 @@ entry:
 }
 ```
 
-`../build-dev/bin/clang -g -O2 test.c -o test-dev`
+`$ ./build-dev/bin/clang -g -O2 test.c -o test-dev`
 ```
-gdb --args test-dev 3 4 5 6
+$ gdb --args test-dev 3 4 5 6
 ...
 (gdb) b 9
 Breakpoint 1 at 0x400513: file test.c, line 9.
@@ -184,3 +184,12 @@ $5 = 40 '('
 (gdb) p argc
 $6 = 5
 ```
+
+![test-dev test-clean compare](https://i.imgur.com/5xsdUVY.png)
+
+
+### Concern
+
+When compiling R600MCCodeEmitter.cpp the memory gets filled due to too
+many generated llvm.dbg.value intrinsic calls.
+The fix limits the number of DbgUsers and DbgValues to 50.
