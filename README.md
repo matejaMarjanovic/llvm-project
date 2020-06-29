@@ -118,7 +118,7 @@ $ gdb --args test-clean 3 4 5 6
 (gdb) b 9
 Breakpoint 1 at 0x400513: file test.c, line 9.
 (gdb) r
-Starting program: /home/rtrk/llvm/test/test-clean 3 4 5 6
+Starting program: test-clean 3 4 5 6
 
 Breakpoint 1, main (argc=5, argv=<optimized out>) at test.c:10
 10	    if (argc % 2)
@@ -167,7 +167,7 @@ $ gdb --args test-dev 3 4 5 6
 (gdb) b 9
 Breakpoint 1 at 0x400513: file test.c, line 9.
 (gdb) r
-Starting program: /home/rtrk/llvm/test/test-dev 3 4 5 6
+Starting program: test-dev 3 4 5 6
 
 Breakpoint 1, main (argc=5, argv=<optimized out>) at test.c:10
 10	    if (argc % 2)
@@ -184,12 +184,21 @@ $5 = 40 '('
 (gdb) p argc
 $6 = 5
 ```
+The following image shows us the difference of the location
+informations with and without this feature.
+0% shows us the number of DIEs with no location information (most of the variables
+in test-clean have been optimized out)
 
+100% shows us the number of DIEs that are visible in the whole scope.
+
+(40%, 50%) shows us the number of DIEs where the location information
+is between 40 and 50 percent of its scope covered.
 ![test-dev test-clean compare](https://i.imgur.com/5xsdUVY.png)
 
 
 ### Concern
 
-When compiling ./llvm/lib/Target/AMDGPU/MCTargetDesc/R600MCCodeEmitter.cpp the memory
-gets filled due to too many generated llvm.dbg.value intrinsic calls.
+When compiling  llvm-project/llvm/lib/Target/AMDGPU/MCTargetDesc/R600MCCodeEmitter.cpp with
+the patched compiler using this feature, the memory gets filled due to too many generated
+llvm.dbg.value intrinsic calls.
 The fix limits the number of DbgUsers and DbgValues to 50.
